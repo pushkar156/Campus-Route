@@ -1,0 +1,48 @@
+# MIT-WPU Campus Graph Data
+# Format: SOURCE DESTINATION WEIGHT(meters)
+# ==========================================
+# 16 Nodes, 24 Edges (Undirected Weighted Graph)
+#
+# Node Index Mapping:
+# 0  - Main Gate
+# 1  - Back Gate
+# 2  - Main Building
+# 3  - Engineering Block
+# 4  - MBA Block
+# 5  - Library
+# 6  - Canteen
+# 7  - Food Court
+# 8  - Auditorium
+# 9  - Sports Complex
+# 10 - Boys Hostel
+# 11 - Girls Hostel
+# 12 - Medical Center
+# 13 - Admin Block
+# 14 - Innovation Center
+# 15 - Parking Area
+
+16 24
+0 2 150
+0 15 80
+0 13 200
+1 10 120
+1 11 140
+2 3 100
+2 5 180
+2 13 90
+3 4 130
+3 14 110
+4 5 70
+5 6 60
+5 8 200
+6 7 40
+7 9 160
+8 13 150
+8 14 120
+9 10 100
+9 11 130
+10 11 80
+10 12 90
+11 12 70
+12 13 170
+14 15 220

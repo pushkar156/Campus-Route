@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CampusRoute — Smart Navigation & Infrastructure Planning for MIT-WPU">
+    <title>CampusRoute | MIT-WPU</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">📍</span>
+                <span class="logo-text">CampusRoute</span>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="active" data-view="navigation">
+                    <span class="icon">🚶</span> Find Route
+                </li>
+                <li data-view="explore">
+                    <span class="icon">🌐</span> Explore
+                </li>
+                <li data-view="infrastructure">
+                    <span class="icon">🏗️</span> Infrastructure
+                </li>
+                <li data-view="planning">
+                    <span class="icon">🧱</span> Planning
+                </li>
+                <li data-view="directory">
+                    <span class="icon">📑</span> Directory
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <p>DAA Mini Project</p>
+                <small>MIT-WPU Smart Campus</small>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <header class="top-bar">
+                <h2 id="view-title">Find Shortest Route</h2>
+                <div class="status-indicator">
+                    <span class="pulse"></span> Server Online
+                </div>
+            </header>
+
+            <section id="main-view" class="view-container">
+                <!-- Navigation View (Default) -->
+                <div id="navigation-view" class="view">
+                    <div class="input-grid">
+                        <div class="glass-card">
+                            <h3>Source</h3>
+                            <select id="src-select" class="custom-select">
+                                <option value="" disabled selected>Select starting location</option>
+                            </select>
+                        </div>
+                        <div class="glass-card">
+                            <h3>Destination</h3>
+                            <select id="dest-select" class="custom-select">
+                                <option value="" disabled selected>Select end location</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="find-btn" class="primary-btn">Calculate Path</button>
+
+                    <div id="nav-result" class="result-card hidden">
+                        <div class="result-header">
+                            <span class="distance-badge">0m</span>
+                            <h4>Optimized Path</h4>
+                        </div>
+                        <div id="path-steps" class="steps"></div>
+                    </div>
+                </div>
+
+                <!-- Visualization Area (Common for most views) -->
+                <div class="vis-container">
+                    <div class="glass-card vis-card">
+                        <div class="card-header">
+                            <h3>Campus Visual Representation</h3>
+                            <button id="reset-vis" class="icon-btn">↺</button>
+                        </div>
+                        <div id="graph-container" class="svg-wrapper">
+                            <!-- SVG Graph will be injected here -->
+                            <svg id="campus-svg" viewBox="0 0 800 600"></svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Console Log for "DAA demonstration" factor -->
+            <div class="console-card glass-card">
+                <div class="console-header">
+                    <span>Algorithm Engine Log</span>
+                    <span class="id-badge">C++ v1.2</span>
+                </div>
+                <div id="console-output" class="console-text">
+                    [System] Initializing CampusRoute engine...
+                    [System] Graph data loaded: 16 nodes, 24 edges.
+                    [System] Waiting for user input...
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals for additional views (Explore, Infrastructure, etc.) -->
+    <div id="modal-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
