@@ -40,7 +40,7 @@ Instant, O(1) lookup service for campus information and metadata based on locati
 
 - **Core Engine (C++)**: High-performance implementation of all graph algorithms and data structures.
 - **Middleware (Python/Flask)**: Orchestrates the C++ engine via `subprocess` and provides a RESTful API.
-- **Frontend (React/Vite)**: Premium Glassmorphism UI with an interactive **SVG-based dynamic graph visualization**.
+- **Frontend (React/Vite)**: Premium "Quantum Dark" Glassmorphism UI built with **Tailwind CSS**. It features a geographically-mapped, interactive **SVG-based dynamic graph visualization** that accurately models zero-crossing planar node locations.
 
 ---
 
@@ -60,8 +60,10 @@ Campus-Route/
 │   ├── app.py              # Main API server
 │   └── requirements.txt    # Python dependencies
 ├── ⚛️ frontend/           # React + Vite Dashboard
-│   ├── src/                # UI components & logic
-│   └── App.jsx             # Main interactive dashboard
+│   ├── index.html          # Entry-point (Tailwind configuration)
+│   └── src/                # UI components & logic
+│       ├── main.jsx        # Root render script
+│       └── App.jsx         # Main interactive dashboard
 └── 📊 data/               # Graph dataset
     └── campus_graph.txt    # MIT-WPU node & edge information
 ```
