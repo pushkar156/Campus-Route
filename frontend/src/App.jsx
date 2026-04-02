@@ -101,11 +101,11 @@ function App() {
     if (!exploreStart) return;
     addLog('Engine', `Executing ${type.toUpperCase()} from node ${exploreStart}`);
     try {
-      const res = await fetch(`${API_BASE}/explore?start=${exploreStart}&type=${type}`);
+      const res = await fetch(`${API_BASE}/explore?start=${exploreStart}&mode=${type}`);
       const data = await res.json();
       setExploreResult(data);
-      setHighlightedPath(data.sequence);
-      addLog('Result', `${type.toUpperCase()} traversal captured ${data.sequence.length} nodes.`);
+      setHighlightedPath(data.traversal);
+      addLog('Result', `${type.toUpperCase()} traversal captured ${data.traversal.length} nodes.`);
     } catch (err) { addLog('Error', err.message); }
   };
 
@@ -115,8 +115,7 @@ function App() {
       const res = await fetch(`${API_BASE}/mst?algo=${algo}`);
       const data = await res.json();
       setMstResult(data);
-      // Highlight MST edges manually in the render logic based on this result
-      addLog('Result', `Optimal spanning tree cost: ${data.total_cost}`);
+      addLog('Result', `Optimal spanning tree cost: ${data.totalCost}`);
     } catch (err) { addLog('Error', err.message); }
   };
 
@@ -126,7 +125,7 @@ function App() {
       const res = await fetch(`${API_BASE}/topo`);
       const data = await res.json();
       setTopoResult(data);
-      addLog('Result', `Captured ${data.sequence.length} dependent tasks.`);
+      addLog('Result', `Captured ${data.order.length} dependent tasks.`);
     } catch (err) { addLog('Error', err.message); }
   };
 
@@ -137,8 +136,8 @@ function App() {
       const data = await res.json();
       setSearchResult(data);
       if (data.found) {
-        addLog('Result', `Location verified: ${data.location.name}`);
-        setHighlightedPath([data.location.name]);
+        addLog('Result', `Location verified: ${data.location}`);
+        setHighlightedPath([data.location]);
       } else {
         addLog('Result', 'Zero matches found in database.');
       }
@@ -151,6 +150,7 @@ function App() {
     setExploreResult(null);
     setMstResult(null);
     setSearchResult(null);
+    setTopoResult(null);
   };
 
   const navItems = [
@@ -234,7 +234,7 @@ function App() {
                     <ArrowRight size={18} />
                   </button>
 
-                  {shortestResult && (
+                  {shortestResult && shortestResult.path && (
                     <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="result-summary">
                       <div className="dist-chip">{shortestResult.distance}m</div>
                       <div className="path-trace">
@@ -265,11 +265,11 @@ function App() {
                     <button className="secondary-btn" onClick={() => runExplore('bfs')}>BFS Explore</button>
                     <button className="secondary-btn" onClick={() => runExplore('dfs')}>DFS Explore</button>
                   </div>
-                  {exploreResult && (
+                  {exploreResult && exploreResult.traversal && (
                     <div className="result-summary">
-                      <div className="label-sm">Discovery Sequence:</div>
+                      <div className="label-sm">Discovery Sequence: ({exploreResult.algorithm})</div>
                       <div className="grid-seq">
-                        {exploreResult.sequence.map((n, i) => (
+                        {exploreResult.traversal.map((n, i) => (
                           <div key={i} className="seq-node">{n}</div>
                         ))}
                       </div>
@@ -287,15 +287,15 @@ function App() {
                     <button className="secondary-btn" onClick={() => runMST('prim')}>Prim's</button>
                     <button className="secondary-btn" onClick={() => runMST('kruskal')}>Kruskal's</button>
                   </div>
-                  {mstResult && (
+                  {mstResult && mstResult.edges && (
                     <div className="result-summary">
                       <div className="cost-box">
                         <span className="lbl">Total Project Cost</span>
-                        <span className="val">{mstResult.total_cost} Units</span>
+                        <span className="val">{mstResult.totalCost} Units</span>
                       </div>
                       <div className="edge-list">
                         {mstResult.edges.map((e, i) => (
-                            <div key={i} className="edge-item">{e.u} ↔ {e.v} ({e.w})</div>
+                            <div key={i} className="edge-item">{e.from} ↔ {e.to} ({e.weight}m)</div>
                         ))}
                       </div>
                     </div>
@@ -307,13 +307,14 @@ function App() {
               {activeView === 'planning' && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
                   <div className="card-lbl">Build Planning (Topo Sort)</div>
+                  <p className="card-desc">Project timeline based on task dependencies.</p>
                   <button className="primary-btn" onClick={runTopo}>Generate Timeline</button>
-                  {topoResult && (
+                  {topoResult && topoResult.order && (
                     <div className="timeline">
-                      {topoResult.sequence.map((task, i) => (
+                      {topoResult.order.map((task, i) => (
                         <div key={i} className="timeline-item">
-                           <div className="time-idx">{i+1}</div>
-                           <div className="task-name">{task}</div>
+                           <div className="time-idx">{task.step}</div>
+                           <div className="task-name">{task.task}</div>
                         </div>
                       ))}
                     </div>
@@ -324,7 +325,7 @@ function App() {
               {/* DIRECTORY MODULE */}
               {activeView === 'directory' && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Location Database (Hash/AVL)</div>
+                  <div className="card-lbl">Location Database (Hash Table)</div>
                   <div className="search-wrap">
                     <input 
                        type="text" placeholder="Search MIT-WPU DB..." 
@@ -334,10 +335,12 @@ function App() {
                   </div>
                   {searchResult && searchResult.found && (
                     <div className="res-details">
-                       <h4>{searchResult.location.name}</h4>
-                       <div className="meta">Database Index: #{searchResult.location.index}</div>
+                       <h4>{searchResult.location}</h4>
+                       <div className="meta">Index: #{searchResult.index}</div>
+                       <p className="desc-text">{searchResult.description}</p>
                     </div>
                   )}
+                  {searchResult && !searchResult.found && <div className="error-msg">Location not in directory.</div>}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -359,10 +362,10 @@ function App() {
                     
                     if (activeView === 'navigation' && highlightedPath.includes(COORDINATES[u].name) && highlightedPath.includes(COORDINATES[v].name)) {
                         isActive = Math.abs(highlightedPath.indexOf(COORDINATES[u].name) - highlightedPath.indexOf(COORDINATES[v].name)) === 1;
-                    } else if (activeView === 'infrastructure' && mstResult) {
+                    } else if (activeView === 'infrastructure' && mstResult && mstResult.edges) {
                         isActive = mstResult.edges.some(e => 
-                            (e.u === COORDINATES[u].name && e.v === COORDINATES[v].name) || 
-                            (e.v === COORDINATES[u].name && e.u === COORDINATES[v].name)
+                            (e.from === COORDINATES[u].name && e.to === COORDINATES[v].name) || 
+                            (e.to === COORDINATES[u].name && e.from === COORDINATES[v].name)
                         );
                     }
 
@@ -378,7 +381,7 @@ function App() {
                   {/* Nodes */}
                   {COORDINATES.map((node, i) => {
                     const isActive = highlightedPath.includes(node.name);
-                    const isEndpoint = (shortestResult?.path[0] === node.name) || (shortestResult?.path.slice(-1)[0] === node.name);
+                    const isEndpoint = (shortestResult?.path && (shortestResult.path[0] === node.name || shortestResult.path[shortestResult.path.length-1] === node.name));
                     return (
                       <g key={i}>
                         <circle
@@ -403,7 +406,7 @@ function App() {
           <div className="glass-card console-card">
             <div className="console-header">
               <div className="label"><Terminal size={14} /> AlgoEngine Process Console</div>
-              <div className="version">C++ High Performance Core</div>
+              <div className="version">C++ Integrated v1.2</div>
             </div>
             <div className="console-content">
               {logs.map((log, i) => (

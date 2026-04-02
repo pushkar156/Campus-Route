@@ -1,1 +1,24 @@
+# --- Frontend (Node/React) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# --- Backend (Python) ---
+backend/__pycache__/
+.venv/
+env/
+venv/
+*.py[cod]
+
+# --- C++ Core ---
+cpp/*.exe
+cpp/*.o
+cpp/*.obj
+cpp/*.out
+
+# --- Project Artifacts ---
+.DS_Store
+.idea/
+.vscode/
+
 implementation_plan.md
