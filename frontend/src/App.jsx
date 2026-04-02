@@ -1,147 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Navigation, 
-  Globe, 
-  TowerControl, 
-  Map as MapIcon, 
-  Search, 
-  Terminal, 
-  ArrowRight, 
-  RefreshCcw,
-  Zap,
-  HardHat,
-  Database
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import './App.css';
 
 const API_BASE = 'http://127.0.0.1:5000';
 
-// MIT-WPU Campus Data
 const COORDINATES = [
-  { x: 100, y: 500, name: "Main Gate" },
-  { x: 700, y: 100, name: "Back Gate" },
-  { x: 250, y: 400, name: "Main Building" },
-  { x: 300, y: 250, name: "Engineering Block" },
-  { x: 450, y: 200, name: "MBA Block" },
-  { x: 500, y: 350, name: "Library" },
-  { x: 600, y: 400, name: "Canteen" },
-  { x: 680, y: 450, name: "Food Court" },
-  { x: 200, y: 150, name: "Auditorium" },
-  { x: 720, y: 300, name: "Sports Complex" },
-  { x: 600, y: 50, name: "Boys Hostel" },
-  { x: 500, y: 50, name: "Girls Hostel" },
-  { x: 350, y: 50, name: "Medical Center" },
-  { x: 100, y: 300, name: "Admin Block" },
-  { x: 400, y: 120, name: "Innovation Center" },
-  { x: 150, y: 550, name: "Parking Area" }
+  { name: "Main Gate", x: 400, y: 560 },             // 0
+  { name: "Back Gate", x: 650, y: 560 },             // 1
+  { name: "Main Building", x: 400, y: 380 },         // 2
+  { name: "Engineering Block", x: 250, y: 420 },     // 3
+  { name: "MBA Block", x: 180, y: 320 },             // 4
+  { name: "Library", x: 280, y: 240 },               // 5
+  { name: "Canteen", x: 480, y: 240 },               // 6
+  { name: "Food Court", x: 550, y: 180 },            // 7
+  { name: "Auditorium", x: 320, y: 480 },            // 8
+  { name: "Sports Complex", x: 650, y: 450 },        // 9
+  { name: "Boys Hostel", x: 600, y: 120 },           // 10
+  { name: "Girls Hostel", x: 700, y: 120 },          // 11
+  { name: "Medical Center", x: 100, y: 450 },        // 12
+  { name: "Admin Block", x: 500, y: 380 },           // 13
+  { name: "Innovation Center", x: 200, y: 120 },     // 14
+  { name: "Parking Area", x: 400, y: 480 },          // 15
 ];
 
 const EDGES = [
-  [0, 2], [0, 15], [0, 13], [1, 10], [1, 11], [2, 3], [2, 5], [2, 13],
-  [3, 4], [3, 14], [4, 5], [5, 6], [5, 8], [6, 7], [7, 9], [8, 13],
+  [0, 2], [0, 15], [0, 13], [1, 10], [1, 11], [2, 3], [2, 5], [2, 13], 
+  [3, 4], [3, 14], [4, 5], [5, 6], [5, 8], [6, 7], [7, 9], [8, 13], 
   [8, 14], [9, 10], [9, 11], [10, 11], [10, 12], [11, 12], [12, 13], [14, 15]
 ];
 
 function App() {
   const [activeView, setActiveView] = useState('navigation');
   const [locations, setLocations] = useState([]);
-  const [logs, setLogs] = useState([{ tag: 'System', msg: 'React Frontend initialized.' }]);
-  const [highlightedPath, setHighlightedPath] = useState([]);
-  const [shortestResult, setShortestResult] = useState(null);
-  const [exploreResult, setExploreResult] = useState(null);
-  const [mstResult, setMstResult] = useState(null);
-  const [topoResult, setTopoResult] = useState(null);
-  const [searchResult, setSearchResult] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [src, setSrc] = useState('');
-  const [dest, setDest] = useState('');
-  const [exploreStart, setExploreStart] = useState('');
+  const [logs, setLogs] = useState([{ time: '00:00:00', tag: 'INIT', msg: 'System initialized.'}]);
   const consoleEndRef = useRef(null);
 
-  // Auto-scroll console
+  const [src, setSrc] = useState('');
+  const [dest, setDest] = useState('');
+  const [shortestResult, setShortestResult] = useState(null);
+
+  const [exploreStart, setExploreStart] = useState('');
+  const [exploreResult, setExploreResult] = useState(null);
+
+  const [mstResult, setMstResult] = useState(null);
+  const [topoResult, setTopoResult] = useState(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
+
+  const [highlightedPath, setHighlightedPath] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/locations`)
+      .then(res => res.json())
+      .then(data => {
+         setLocations(data.locations || []);
+         addLog('SYNC', `Live visual network push: ${data.locations?.length || 0} nodes broadcasted.`);
+      })
+      .catch(err => addLog('ERROR', err.message));
+  }, []);
+
   useEffect(() => {
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  useEffect(() => {
-    fetchLocations();
-  }, []);
-
   const addLog = (tag, msg) => {
-    setLogs(prev => [...prev, { tag, msg, time: new Date().toLocaleTimeString([], { hour12: false }) }]);
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    setLogs(prev => [...prev, { time, tag, msg }]);
   };
 
-  const fetchLocations = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/locations`);
-      const data = await res.json();
-      setLocations(data.locations);
-      addLog('API', `Synchronized ${data.locations.length} campus nodes.`);
-    } catch (err) {
-      addLog('Error', `Backend connection failed: ${err.message}`);
+  const getTagColor = (tag) => {
+    switch(tag) {
+      case 'INIT': return 'text-secondary';
+      case 'ERROR': return 'text-error';
+      case 'SYNC': return 'text-primary';
+      case 'CORE': return 'text-primary';
+      case 'MST': return 'text-tertiary';
+      default: return 'text-secondary';
     }
-  };
-
-  /** ALGO DISPATCHERS **/
-
-  const runDijkstra = async () => {
-    if (!src || !dest) return;
-    addLog('Engine', `Executing Dijkstra: ${src} -> ${dest}`);
-    try {
-      const res = await fetch(`${API_BASE}/shortest-path?src=${src}&dest=${dest}`);
-      const data = await res.json();
-      setShortestResult(data);
-      setHighlightedPath(data.path);
-      addLog('Result', `Shortest path calculated: ${data.distance}m`);
-    } catch (err) { addLog('Error', err.message); }
-  };
-
-  const runExplore = async (type) => {
-    if (!exploreStart) return;
-    addLog('Engine', `Executing ${type.toUpperCase()} from node ${exploreStart}`);
-    try {
-      const res = await fetch(`${API_BASE}/explore?start=${exploreStart}&mode=${type}`);
-      const data = await res.json();
-      setExploreResult(data);
-      setHighlightedPath(data.traversal);
-      addLog('Result', `${type.toUpperCase()} traversal captured ${data.traversal.length} nodes.`);
-    } catch (err) { addLog('Error', err.message); }
-  };
-
-  const runMST = async (algo) => {
-    addLog('Engine', `Calculating Campus MST using ${algo}...`);
-    try {
-      const res = await fetch(`${API_BASE}/mst?algo=${algo}`);
-      const data = await res.json();
-      setMstResult(data);
-      addLog('Result', `Optimal spanning tree cost: ${data.totalCost}`);
-    } catch (err) { addLog('Error', err.message); }
-  };
-
-  const runTopo = async () => {
-    addLog('Engine', `Sorting construction dependencies...`);
-    try {
-      const res = await fetch(`${API_BASE}/topo`);
-      const data = await res.json();
-      setTopoResult(data);
-      addLog('Result', `Captured ${data.order.length} dependent tasks.`);
-    } catch (err) { addLog('Error', err.message); }
-  };
-
-  const runSearch = async () => {
-    addLog('Engine', `Searching hash table for: ${searchQuery}`);
-    try {
-      const res = await fetch(`${API_BASE}/search?query=${searchQuery}`);
-      const data = await res.json();
-      setSearchResult(data);
-      if (data.found) {
-        addLog('Result', `Location verified: ${data.location}`);
-        setHighlightedPath([data.location]);
-      } else {
-        addLog('Result', 'Zero matches found in database.');
-      }
-    } catch (err) { addLog('Error', err.message); }
   };
 
   const resetVis = () => {
@@ -153,273 +87,468 @@ function App() {
     setTopoResult(null);
   };
 
+  const runDijkstra = async () => {
+    if (!src || !dest) return;
+    addLog('CORE', `Starting Dijkstra thread on nodes ${src} -> ${dest}`);
+    try {
+      const res = await fetch(`${API_BASE}/shortest-path?src=${src}&dest=${dest}`);
+      const data = await res.json();
+      setShortestResult(data);
+      setHighlightedPath(data.path);
+      addLog('CORE', `Path found: ${data.distance}m via ${data.path.length} nodes.`);
+    } catch (err) { addLog('ERROR', err.message); }
+  };
+
+  const runExplore = async (mode) => {
+    if (!exploreStart) return;
+    addLog('CORE', `Executing ${mode.toUpperCase()} from node ${exploreStart}`);
+    try {
+      const res = await fetch(`${API_BASE}/explore?start=${exploreStart}&mode=${mode}`);
+      const data = await res.json();
+      setExploreResult(data);
+      setHighlightedPath(data.traversal);
+      addLog('CORE', `${mode.toUpperCase()} traversal captured ${data.traversal.length} nodes.`);
+    } catch (err) { addLog('ERROR', err.message); }
+  };
+
+  const runMST = async (algo) => {
+    addLog('MST', `Calculating Campus MST using ${algo}...`);
+    try {
+      const res = await fetch(`${API_BASE}/mst?algo=${algo}`);
+      const data = await res.json();
+      setMstResult(data);
+      addLog('MST', `${algo} optimization completed. Cost: ${data.totalCost} Units.`);
+    } catch (err) { addLog('ERROR', err.message); }
+  };
+
+  const runTopo = async () => {
+    addLog('CORE', `Sorting construction dependencies...`);
+    try {
+      const res = await fetch(`${API_BASE}/topo`);
+      const data = await res.json();
+      setTopoResult(data);
+      addLog('CORE', `Captured ${data.order?.length || 0} dependent tasks.`);
+    } catch (err) { addLog('ERROR', err.message); }
+  };
+
+  const runSearch = async () => {
+    addLog('CORE', `Searching database for: ${searchQuery}`);
+    try {
+      const res = await fetch(`${API_BASE}/search?query=${searchQuery}`);
+      const data = await res.json();
+      setSearchResult(data);
+      if (data.found) {
+        addLog('SYNC', `Location verified: ${data.location}`);
+        setHighlightedPath([data.location]);
+      } else {
+        addLog('ERROR', 'Zero matches found in database.');
+      }
+    } catch (err) { addLog('ERROR', err.message); }
+  };
+
   const navItems = [
-    { id: 'navigation', label: 'Navigation', icon: Navigation },
-    { id: 'explore', label: 'Explore', icon: Globe },
-    { id: 'infrastructure', label: 'Infrastructure', icon: TowerControl },
-    { id: 'planning', label: 'Planning', icon: HardHat },
-    { id: 'directory', label: 'Directory', icon: Database },
+    { id: 'navigation', label: 'Navigation', icon: 'route' },
+    { id: 'explore', label: 'Explore', icon: 'explore' },
+    { id: 'infrastructure', label: 'Infrastructure', icon: 'account_tree' },
+    { id: 'planning', label: 'Planning', icon: 'event_note' },
+    { id: 'directory', label: 'Directory', icon: 'contacts' },
   ];
 
   return (
-    <div className="dashboard">
-      {/* Sidebar */}
-      <nav className="sidebar">
-        <div className="logo">
-          <div className="logo-pulse">
-            <Zap size={20} fill="#3b82f6" stroke="#3b82f6" />
+    <div className="flex h-screen overflow-hidden">
+      {/* SideNavBar */}
+      <aside className="flex flex-col h-full py-8 w-72 border-r-0 bg-[#111417] shrink-0 z-20 shadow-[20px_0_40px_rgba(0,0,0,0.4)]">
+        <div className="px-8 mb-12">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-secondary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+            <h1 className="text-2xl font-black text-[#ffd709] italic font-headline tracking-tighter">CampusRoute</h1>
           </div>
-          <h2>CampusRoute</h2>
+          <p className="font-label text-[10px] tracking-widest uppercase text-on-surface-variant mt-2">Engineering Dashboard</p>
         </div>
-
-        <div className="nav-group">
-          {navItems.map(item => (
-            <button
-              key={item.id}
-              className={`nav-item ${activeView === item.id ? 'active' : ''}`}
-              onClick={() => { setActiveView(item.id); resetVis(); }}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+        <nav className="flex-1 px-4 space-y-2">
+          {navItems.map(item => {
+            const isActive = activeView === item.id;
+            return (
+              <button 
+                key={item.id}
+                onClick={() => { setActiveView(item.id); resetVis(); }}
+                className={`w-full flex items-center gap-4 px-4 py-3 transition-colors duration-300 text-left ${
+                  isActive 
+                    ? 'text-[#ffd709] font-bold border-r-2 border-[#ffd709] bg-white/5'
+                    : 'text-[#aaabaf] hover:text-white hover:bg-[#171a1d]'
+                }`}
+              >
+                <span className="material-symbols-outlined">{item.icon}</span>
+                <span className="font-label tracking-widest uppercase text-xs">{item.label}</span>
+              </button>
+            )
+          })}
+        </nav>
+        <div className="px-8 mt-auto pt-8 border-t border-outline-variant/10">
+          <div className="mt-8 space-y-4">
+            <a className="flex items-center gap-4 text-[#aaabaf] hover:text-white transition-colors text-xs font-label uppercase tracking-widest" href="#">
+              <span className="material-symbols-outlined text-sm">settings</span>
+              Settings
+            </a>
+            <p className="text-[10px] font-label text-on-surface-variant/40 mt-4 leading-relaxed">
+              MIT-WPU PBL Project<br/>DAA Engineering Team
+            </p>
+          </div>
         </div>
+      </aside>
 
-        <div className="sidebar-footer">
-          <p>MIT-WPU PBL Project</p>
-          <small>Design & Analysis of Algorithms</small>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="content">
-        <header className="top-bar">
-          <motion.h1 
-            key={activeView}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            {navItems.find(i => i.id === activeView)?.label}
-          </motion.h1>
-          <div className="badge-group">
-            <div className="status-badge">
-              <span className="dot" /> Server Online
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col min-w-0 bg-background relative">
+        {/* TopNavBar */}
+        <header className="flex justify-between items-center w-full px-8 h-16 bg-[#0c0e11]/80 backdrop-blur-xl shrink-0 z-10 shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative">
+          <div className="flex items-center gap-6">
+            <h2 className="font-headline font-bold text-lg text-on-surface tracking-tight">Algorithm Analysis</h2>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary/20">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#6dddff]"></div>
+              <span className="font-label text-[10px] font-bold text-primary tracking-wider uppercase">Algorithm Engine: Online</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-8">
+              <span className="text-[#6dddff] border-b border-[#6dddff] font-label text-xs uppercase tracking-widest">Node Health</span>
+            </nav>
+            <div className="h-6 w-[1px] bg-outline-variant/20"></div>
+            <div className="flex items-center gap-4">
+              <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">terminal</span>
             </div>
           </div>
         </header>
 
-        <div className="main-grid">
-          <section className="controls-panel">
-            <AnimatePresence mode="wait">
-              {/* NAVIGATION MODULE */}
+        {/* Dashboard Grid */}
+        <div className="flex-1 overflow-y-auto p-8 custom-scroll relative">
+          <div className="grid grid-cols-12 gap-8 h-full min-h-[600px]">
+            {/* Left Panel (Calculations) */}
+            <div className="col-span-12 xl:col-span-5 space-y-8">
+              
               {activeView === 'navigation' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Pathfinding (Dijkstra)</div>
-                  <div className="input-box">
-                    <label>Source</label>
-                    <select value={src} onChange={e => setSrc(e.target.value)}>
-                      <option value="">Start node</option>
-                      {locations.map(loc => <option key={loc.index} value={loc.index}>{loc.name}</option>)}
-                    </select>
+                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="material-symbols-outlined text-6xl">directions</span>
                   </div>
-                  <div className="input-box">
-                    <label>Destination</label>
-                    <select value={dest} onChange={e => setDest(e.target.value)}>
-                      <option value="">End node</option>
-                      {locations.map(loc => <option key={loc.index} value={loc.index}>{loc.name}</option>)}
-                    </select>
-                  </div>
-                  <button className="primary-btn" onClick={runDijkstra}>
-                    <span>Calculate Path</span>
-                    <ArrowRight size={18} />
-                  </button>
-
-                  {shortestResult && shortestResult.path && (
-                    <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="result-summary">
-                      <div className="dist-chip">{shortestResult.distance}m</div>
-                      <div className="path-trace">
-                        {shortestResult.path.map((p, i) => (
-                          <React.Fragment key={i}>
-                            <span>{p}</span>
-                            {i < shortestResult.path.length -1 && <ArrowRight size={12} className="sep" />}
-                          </React.Fragment>
-                        ))}
+                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                    <span className="w-1 h-4 bg-primary rounded-full"></span>
+                    Pathfinding (Dijkstra)
+                  </h3>
+                  <div className="space-y-4 relative z-10">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Source Node</label>
+                        <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={src} onChange={e => setSrc(e.target.value)}>
+                          <option value="">Start node</option>
+                          {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                        </select>
                       </div>
-                    </motion.div>
-                  )}
-                </motion.div>
+                      <div className="space-y-1">
+                        <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Destination</label>
+                        <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={dest} onChange={e => setDest(e.target.value)}>
+                          <option value="">End node</option>
+                          {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2">
+                      <button onClick={runDijkstra} className="px-6 py-2.5 bg-secondary text-on-secondary font-label font-bold text-[10px] tracking-widest uppercase rounded hover:brightness-110 transition-all">
+                          Calculate Path
+                      </button>
+                      {shortestResult && shortestResult.path && (
+                        <div className="px-3 py-1.5 bg-surface-container-highest rounded border border-outline-variant/20 flex items-center gap-3">
+                          <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Est. Distance</span>
+                          <span className="font-headline font-bold text-secondary">{shortestResult.distance}m</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </section>
               )}
 
-              {/* EXPLORE MODULE */}
               {activeView === 'explore' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Graph Traversal (BFS/DFS)</div>
-                  <div className="input-box">
-                    <label>Starting Node</label>
-                    <select value={exploreStart} onChange={e => setExploreStart(e.target.value)}>
-                      <option value="">Select node</option>
-                      {locations.map(loc => <option key={loc.index} value={loc.index}>{loc.name}</option>)}
-                    </select>
+                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="material-symbols-outlined text-6xl">explore</span>
                   </div>
-                  <div className="btn-row">
-                    <button className="secondary-btn" onClick={() => runExplore('bfs')}>BFS Explore</button>
-                    <button className="secondary-btn" onClick={() => runExplore('dfs')}>DFS Explore</button>
-                  </div>
-                  {exploreResult && exploreResult.traversal && (
-                    <div className="result-summary">
-                      <div className="label-sm">Discovery Sequence: ({exploreResult.algorithm})</div>
-                      <div className="grid-seq">
-                        {exploreResult.traversal.map((n, i) => (
-                          <div key={i} className="seq-node">{n}</div>
-                        ))}
-                      </div>
+                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                    <span className="w-1 h-4 bg-primary rounded-full"></span>
+                    Traversal Logic
+                  </h3>
+                  <div className="space-y-4 relative z-10">
+                    <div className="space-y-1">
+                      <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Starting Node</label>
+                      <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={exploreStart} onChange={e => setExploreStart(e.target.value)}>
+                        <option value="">Select node</option>
+                        {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                      </select>
                     </div>
-                  )}
-                </motion.div>
+                    <div className="flex flex-wrap gap-3">
+                      <button onClick={() => runExplore('bfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
+                          Breadth First (BFS)
+                      </button>
+                      <button onClick={() => runExplore('dfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
+                          Depth First (DFS)
+                      </button>
+                    </div>
+                    {exploreResult && exploreResult.traversal && (
+                      <div className="mt-4 p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+                        <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Traversal Order ({exploreResult.algorithm})</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {exploreResult.traversal.map((n, i) => (
+                            <span key={i} className="px-3 py-1 flex items-center justify-center bg-surface-container rounded-full text-[10px] border border-outline-variant/20 text-white truncate max-w-[100px]" title={n}>{n}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
               )}
 
-              {/* INFRASTRUCTURE MODULE */}
               {activeView === 'infrastructure' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Minimum Spanning Tree (MST)</div>
-                  <p className="card-desc">Optimize campus cabling/piping cost across all nodes.</p>
-                  <div className="btn-row">
-                    <button className="secondary-btn" onClick={() => runMST('prim')}>Prim's</button>
-                    <button className="secondary-btn" onClick={() => runMST('kruskal')}>Kruskal's</button>
+                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="material-symbols-outlined text-6xl">account_tree</span>
                   </div>
-                  {mstResult && mstResult.edges && (
-                    <div className="result-summary">
-                      <div className="cost-box">
-                        <span className="lbl">Total Project Cost</span>
-                        <span className="val">{mstResult.totalCost} Units</span>
+                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                    <span className="w-1 h-4 bg-primary rounded-full"></span>
+                    Structural MST
+                  </h3>
+                  <div className="space-y-4 relative z-10">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex-1">
+                        <div className="flex bg-surface-container-lowest p-1 rounded-lg">
+                          <button onClick={() => runMST('prim')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Prim's</button>
+                          <button onClick={() => runMST('kruskal')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Kruskal's</button>
+                        </div>
                       </div>
-                      <div className="edge-list">
-                        {mstResult.edges.map((e, i) => (
-                            <div key={i} className="edge-item">{e.from} ↔ {e.to} ({e.weight}m)</div>
-                        ))}
+                      <div className="text-right">
+                        <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Project Cost</p>
+                        <p className="font-headline font-bold text-2xl text-secondary">{mstResult ? mstResult.totalCost : '0'}m</p>
                       </div>
                     </div>
-                  )}
-                </motion.div>
+                  </div>
+                </section>
               )}
 
-              {/* PLANNING MODULE */}
               {activeView === 'planning' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Build Planning (Topo Sort)</div>
-                  <p className="card-desc">Project timeline based on task dependencies.</p>
-                  <button className="primary-btn" onClick={runTopo}>Generate Timeline</button>
+                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span className="material-symbols-outlined text-6xl">event_note</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-6 relative z-10">
+                    <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase flex items-center gap-2">
+                      <span className="w-1 h-4 bg-primary rounded-full"></span>
+                      Topo Planning
+                    </h3>
+                    <button onClick={runTopo} className="text-[10px] font-label text-secondary uppercase tracking-widest bg-secondary/10 px-3 py-1 rounded hover:bg-secondary/20">Generate Timeline</button>
+                  </div>
                   {topoResult && topoResult.order && (
-                    <div className="timeline">
+                    <div className="space-y-3 relative z-10">
                       {topoResult.order.map((task, i) => (
-                        <div key={i} className="timeline-item">
-                           <div className="time-idx">{task.step}</div>
-                           <div className="task-name">{task.task}</div>
+                        <div key={i} className="flex items-center gap-4">
+                          <span className="w-2 h-2 rounded-full bg-primary"></span>
+                          <div className="flex-1 h-6 bg-surface-container-lowest rounded overflow-hidden flex items-center px-3 relative">
+                             <div className="absolute bg-primary/10 inset-0" style={{width: `${(i+1)*10}%`}}></div>
+                             <span className="text-[11px] text-white z-10">{task.task}</span>
+                          </div>
+                          <span className="font-label text-[9px] text-on-surface-variant w-10">STP {task.step}</span>
                         </div>
                       ))}
                     </div>
                   )}
-                </motion.div>
+                </section>
               )}
 
-              {/* DIRECTORY MODULE */}
               {activeView === 'directory' && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card">
-                  <div className="card-lbl">Location Database (Hash Table)</div>
-                  <div className="search-wrap">
-                    <input 
-                       type="text" placeholder="Search MIT-WPU DB..." 
-                       value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    />
-                    <button onClick={runSearch} className="search-btn"><Search size={18}/></button>
+                <div className="flex flex-col gap-6">
+                  <div className="h-24 glass-module rounded-xl flex items-center px-8 gap-6 z-10 relative">
+                    <div className="flex-1 relative">
+                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                      <input 
+                         className="w-full bg-surface-container-lowest/50 border-none rounded-lg pl-12 py-3 text-sm font-label tracking-widest uppercase focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40 text-white outline-none" 
+                         placeholder="QUERY DATABASE (HASH)..." 
+                         type="text"
+                         value={searchQuery}
+                         onChange={e => setSearchQuery(e.target.value)}
+                         onKeyDown={e => e.key === 'Enter' && runSearch()}
+                      />
+                    </div>
+                    <button onClick={runSearch} className="flex items-center gap-2 px-4 py-3 hover:bg-primary/20 cursor-pointer rounded bg-surface-container border border-outline-variant/20">
+                      <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest text-primary">Search</span>
+                    </button>
                   </div>
                   {searchResult && searchResult.found && (
-                    <div className="res-details">
-                       <h4>{searchResult.location}</h4>
-                       <div className="meta">Index: #{searchResult.index}</div>
-                       <p className="desc-text">{searchResult.description}</p>
+                    <div className="glass-module rounded-xl p-6 relative">
+                       <h3 className="text-secondary font-headline text-xl mb-2">{searchResult.location}</h3>
+                       <div className="text-on-surface-variant text-sm mb-4">{searchResult.description}</div>
+                       <div className="flex items-center gap-2 px-4 py-2 rounded bg-surface-container border border-outline-variant/20 inline-flex">
+                          <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Index ID:</span>
+                          <span className="font-headline font-bold text-primary">#{searchResult.index}</span>
+                       </div>
                     </div>
                   )}
-                  {searchResult && !searchResult.found && <div className="error-msg">Location not in directory.</div>}
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </section>
 
-          <section className="visualization-panel">
-            <div className="glass-card vis-card">
-              <div className="vis-header">
-                <h3>Campus Visual Network</h3>
-                <button onClick={resetVis} className="icon-btn" title="Reset View">
-                  <RefreshCcw size={16} />
-                </button>
-              </div>
-              <div className="svg-container">
-                <svg viewBox="0 0 800 600">
-                  {/* Edges */}
-                  {EDGES.map(([u, v], i) => {
-                    let isActive = false;
-                    
-                    if (activeView === 'navigation' && highlightedPath.includes(COORDINATES[u].name) && highlightedPath.includes(COORDINATES[v].name)) {
-                        isActive = Math.abs(highlightedPath.indexOf(COORDINATES[u].name) - highlightedPath.indexOf(COORDINATES[v].name)) === 1;
-                    } else if (activeView === 'infrastructure' && mstResult && mstResult.edges) {
-                        isActive = mstResult.edges.some(e => 
+            </div>
+
+            {/* Right Panel (Visualization) */}
+            <div className="col-span-12 xl:col-span-7 flex flex-col gap-8 h-full">
+              {/* Main Visualization Surface */}
+              <div className="flex-1 glass-module rounded-2xl relative border-none bg-surface-container-low overflow-hidden min-h-[500px]">
+                
+                {/* Network HUD Overlay */}
+                <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
+                  <div className="px-4 py-2 bg-background/60 backdrop-blur-md rounded-lg border border-white/5">
+                    <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Network Base</p>
+                    <p className="font-headline font-bold text-primary text-xl">{locations.length || 16} <span className="text-xs text-on-surface-variant font-normal">nodes</span></p>
+                  </div>
+                  <div className="px-4 py-2 bg-background/60 backdrop-blur-md rounded-lg border border-white/5">
+                    <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Connections</p>
+                    <p className="font-headline font-bold text-secondary text-xl">{EDGES.length} <span className="text-xs text-on-surface-variant font-normal">edges</span></p>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="absolute bottom-6 right-6 z-10 space-y-2 bg-background/60 backdrop-blur-md p-4 rounded-lg border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-1 bg-secondary shadow-[0_0_8px_#ffd709]"></div>
+                    <span className="font-label text-[9px] uppercase tracking-widest text-on-surface">Shortest Path</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-1 bg-primary shadow-[0_0_8px_#6dddff]"></div>
+                    <span className="font-label text-[9px] uppercase tracking-widest text-on-surface">MST Backbone</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full border border-outline-variant"></div>
+                    <span className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant">Passive Nodes</span>
+                  </div>
+                </div>
+
+                {/* SVG Map Visualization */}
+                <div className="w-full h-full flex items-center justify-center p-12 absolute inset-0">
+                  <svg className="w-full h-full opacity-80" viewBox="0 0 800 600">
+                    {/* Passive Edges & Active MST Connections */}
+                    {EDGES.map(([u, v], i) => {
+                      let isMst = false;
+                      if (activeView === 'infrastructure' && mstResult && mstResult.edges) {
+                        isMst = mstResult.edges.some(e => 
                             (e.from === COORDINATES[u].name && e.to === COORDINATES[v].name) || 
                             (e.to === COORDINATES[u].name && e.from === COORDINATES[v].name)
                         );
-                    }
+                      }
 
-                    return (
-                      <line
-                        key={i}
-                        x1={COORDINATES[u].x} y1={COORDINATES[u].y}
-                        x2={COORDINATES[v].x} y2={COORDINATES[v].y}
-                        className={`edge ${isActive ? 'active' : ''}`}
-                      />
-                    );
-                  })}
-                  {/* Nodes */}
-                  {COORDINATES.map((node, i) => {
-                    const isActive = highlightedPath.includes(node.name);
-                    const isEndpoint = (shortestResult?.path && (shortestResult.path[0] === node.name || shortestResult.path[shortestResult.path.length-1] === node.name));
-                    return (
-                      <g key={i}>
-                        <circle
-                          cx={node.x} cy={node.y}
-                          r={isActive ? 8 : 6}
-                          className={`node ${isActive ? 'active' : ''} ${isEndpoint ? 'endpoint' : ''}`}
+                      return (
+                        <line
+                          key={i}
+                          x1={COORDINATES[u].x} y1={COORDINATES[u].y}
+                          x2={COORDINATES[v].x} y2={COORDINATES[v].y}
+                          className="transition-all duration-300"
+                          stroke={isMst ? "#6dddff" : "#46484b"}
+                          strokeWidth={isMst ? "3" : "1.5"}
+                          strokeDasharray={isMst ? "0" : "4 4"}
+                          opacity={isMst ? "1" : "0.4"}
+                          style={isMst ? { filter: 'drop-shadow(0 0 4px #6dddff)' } : {}}
                         />
-                        <text x={node.x + 10} y={node.y + 4} className="node-label">
-                          {node.name}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              </div>
-            </div>
-          </section>
-        </div>
+                      );
+                    })}
 
-        {/* Console Log */}
-        <footer className="console-panel">
-          <div className="glass-card console-card">
-            <div className="console-header">
-              <div className="label"><Terminal size={14} /> AlgoEngine Process Console</div>
-              <div className="version">C++ Integrated v1.2</div>
-            </div>
-            <div className="console-content">
-              {logs.map((log, i) => (
-                <div key={i} className="log-line">
-                  <span className="timestamp">[{log.time}]</span>
-                  <span className={`tag ${log.tag.toLowerCase()}`}>[{log.tag}]</span>
-                  <span className="msg">{log.msg}</span>
+                    {/* Shortest Path Layer SVG */}
+                    {activeView === 'navigation' && shortestResult && shortestResult.path && (
+                      <g stroke="#ffd709" strokeLinecap="round" strokeWidth="3" style={{ filter: 'drop-shadow(0 0 8px #ffd709)' }}>
+                        {shortestResult.path.map((nodeName, i) => {
+                           if (i === 0) return null;
+                           const prevName = shortestResult.path[i-1];
+                           const prevNode = COORDINATES.find(c => c.name === prevName);
+                           const currNode = COORDINATES.find(c => c.name === nodeName);
+                           if (!prevNode || !currNode) return null;
+                           return (
+                             <line 
+                               key={`path-${i}`} 
+                               x1={prevNode.x} y1={prevNode.y} 
+                               x2={currNode.x} y2={currNode.y} 
+                             />
+                           );
+                        })}
+                      </g>
+                    )}
+
+                    {/* Nodes */}
+                    {COORDINATES.map((node, i) => {
+                      const isActivePath = highlightedPath.includes(node.name);
+                      const isEndpoint = (shortestResult?.path && (shortestResult.path[0] === node.name || shortestResult.path[shortestResult.path.length-1] === node.name));
+                      
+                      let fillColor = "#171a1d";
+                      let strokeColor = "#46484b";
+                      let radius = "4";
+
+                      if (isActivePath) {
+                        fillColor = "#171a1d";
+                        strokeColor = "#6dddff";
+                        radius = "6";
+                      }
+                      if (isEndpoint && activeView === 'navigation') {
+                         fillColor = "#ffd709";
+                         strokeColor = "#ffd709";
+                         radius = "6";
+                      }
+
+                      return (
+                        <g key={i}>
+                          <circle
+                            cx={node.x} cy={node.y}
+                            r={radius}
+                            fill={fillColor}
+                            stroke={strokeColor}
+                            strokeWidth="2"
+                            className="transition-all duration-300"
+                            style={isActivePath ? { filter: 'drop-shadow(0 0 4px #6dddff)' } : {}}
+                          />
+                          <text 
+                            x={node.x - 20} y={node.y - 12} 
+                            fill="#f9f9fd" 
+                            className="font-label text-[10px]"
+                            opacity={isActivePath ? 1 : 0.4}
+                          >
+                            {node.name.replace(' ', '_').toUpperCase()}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
                 </div>
-              ))}
-              <div ref={consoleEndRef} />
+              </div>
+
             </div>
           </div>
+        </div>
+
+        {/* Bottom Console */}
+        <footer className="h-48 bg-[#0c0e11] border-t border-outline-variant/10 flex flex-col shrink-0 z-10 relative">
+          <div className="px-8 py-2 flex items-center justify-between bg-surface-container-low/50">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-xs text-primary">terminal</span>
+              <h4 className="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">System Engine Logs</h4>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-label text-[9px] text-primary uppercase tracking-widest">C++ Integrated Core v1.2</span>
+              <div className="h-3 w-[1px] bg-outline-variant/30"></div>
+              <span className="font-label text-[9px] text-on-surface-variant uppercase tracking-widest">Status: SYNCED</span>
+            </div>
+          </div>
+          <div className="flex-1 terminal-scroll overflow-y-auto px-8 py-4 font-mono text-[11px] space-y-1 bg-surface-container-lowest/30">
+            {logs.map((log, i) => (
+              <div key={i} className="flex gap-4">
+                <span className="text-outline-variant">[{log.time}]</span>
+                <span className={getTagColor(log.tag)}>{log.tag}</span>
+                <span className="text-on-surface-variant">{log.msg}</span>
+              </div>
+            ))}
+            <div ref={consoleEndRef} />
+          </div>
         </footer>
+        
       </main>
     </div>
   );

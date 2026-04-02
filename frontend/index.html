@@ -1,12 +1,88 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CampusRoute | MIT-WPU Smart Navigation</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#0c0e11",
+                        "surface": "#0c0e11",
+                        "surface-dim": "#0c0e11",
+                        "surface-bright": "#292c31",
+                        "surface-container-lowest": "#000000",
+                        "surface-container-low": "#111417",
+                        "surface-container": "#171a1d",
+                        "surface-container-high": "#1d2024",
+                        "surface-container-highest": "#23262a",
+                        "on-surface": "#f9f9fd",
+                        "on-surface-variant": "#aaabaf",
+                        "inverse-surface": "#f9f9fd",
+                        "inverse-on-surface": "#535559",
+                        "primary": "#6dddff",
+                        "on-primary": "#004c5e",
+                        "primary-container": "#00d2fd",
+                        "on-primary-container": "#004352",
+                        "secondary": "#ffd709",
+                        "on-secondary": "#5b4b00",
+                        "secondary-container": "#705d00",
+                        "on-secondary-container": "#fff7e6",
+                        "tertiary": "#749eff",
+                        "on-tertiary": "#002054",
+                        "tertiary-container": "#5f90fb",
+                        "on-tertiary-container": "#001135",
+                        "error": "#ff716c",
+                        "on-error": "#490006",
+                        "error-container": "#9f0519",
+                        "on-error-container": "#ffa8a3",
+                        "outline": "#747579",
+                        "outline-variant": "#46484b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-module {
+            background: rgba(23, 26, 29, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #23262a;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #23262a;
+            border-radius: 4px;
+        }
+    </style>
   </head>
-  <body>
+  <body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary-container overflow-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
