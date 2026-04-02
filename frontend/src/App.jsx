@@ -3,22 +3,22 @@ import React, { useState, useEffect, useRef } from 'react';
 const API_BASE = 'http://127.0.0.1:5000';
 
 const COORDINATES = [
-  { name: "Main Gate", x: 400, y: 560 },             // 0
-  { name: "Back Gate", x: 650, y: 560 },             // 1
-  { name: "Main Building", x: 400, y: 380 },         // 2
-  { name: "Engineering Block", x: 250, y: 420 },     // 3
-  { name: "MBA Block", x: 180, y: 320 },             // 4
-  { name: "Library", x: 280, y: 240 },               // 5
-  { name: "Canteen", x: 480, y: 240 },               // 6
-  { name: "Food Court", x: 550, y: 180 },            // 7
-  { name: "Auditorium", x: 320, y: 480 },            // 8
-  { name: "Sports Complex", x: 650, y: 450 },        // 9
-  { name: "Boys Hostel", x: 600, y: 120 },           // 10
-  { name: "Girls Hostel", x: 700, y: 120 },          // 11
-  { name: "Medical Center", x: 100, y: 450 },        // 12
-  { name: "Admin Block", x: 500, y: 380 },           // 13
-  { name: "Innovation Center", x: 200, y: 120 },     // 14
-  { name: "Parking Area", x: 400, y: 480 },          // 15
+  { name: "Main Gate", x: 400, y: 550 },             // 0
+  { name: "Back Gate", x: 400, y: 40 },              // 1
+  { name: "Main Building", x: 400, y: 420 },         // 2
+  { name: "Engineering Block", x: 240, y: 350 },     // 3
+  { name: "MBA Block", x: 240, y: 240 },             // 4
+  { name: "Library", x: 400, y: 250 },               // 5
+  { name: "Canteen", x: 550, y: 260 },               // 6
+  { name: "Food Court", x: 670, y: 180 },            // 7
+  { name: "Auditorium", x: 280, y: 460 },            // 8
+  { name: "Sports Complex", x: 580, y: 80 },         // 9
+  { name: "Boys Hostel", x: 280, y: 120 },           // 10
+  { name: "Girls Hostel", x: 460, y: 120 },          // 11
+  { name: "Medical Center", x: 100, y: 200 },        // 12
+  { name: "Admin Block", x: 550, y: 420 },           // 13
+  { name: "Innovation Center", x: 150, y: 480 },     // 14
+  { name: "Parking Area", x: 580, y: 530 },          // 15
 ];
 
 const EDGES = [
@@ -93,6 +93,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/shortest-path?src=${src}&dest=${dest}`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setShortestResult(data);
       setHighlightedPath(data.path);
       addLog('CORE', `Path found: ${data.distance}m via ${data.path.length} nodes.`);
@@ -105,6 +106,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/explore?start=${exploreStart}&mode=${mode}`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setExploreResult(data);
       setHighlightedPath(data.traversal);
       addLog('CORE', `${mode.toUpperCase()} traversal captured ${data.traversal.length} nodes.`);
@@ -116,6 +118,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/mst?algo=${algo}`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setMstResult(data);
       addLog('MST', `${algo} optimization completed. Cost: ${data.totalCost} Units.`);
     } catch (err) { addLog('ERROR', err.message); }
@@ -126,6 +129,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/topo`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setTopoResult(data);
       addLog('CORE', `Captured ${data.order?.length || 0} dependent tasks.`);
     } catch (err) { addLog('ERROR', err.message); }
@@ -136,6 +140,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/search?query=${searchQuery}`);
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setSearchResult(data);
       if (data.found) {
         addLog('SYNC', `Location verified: ${data.location}`);
@@ -506,9 +511,10 @@ function App() {
                             style={isActivePath ? { filter: 'drop-shadow(0 0 4px #6dddff)' } : {}}
                           />
                           <text 
-                            x={node.x - 20} y={node.y - 12} 
+                            x={node.x} y={node.y - 15} 
                             fill="#f9f9fd" 
                             className="font-label text-[10px]"
+                            textAnchor="middle"
                             opacity={isActivePath ? 1 : 0.4}
                           >
                             {node.name.replace(' ', '_').toUpperCase()}
