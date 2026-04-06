@@ -1,110 +1,161 @@
 # 📍 CampusRoute — MIT-WPU Smart Navigation System
 
-[![Technology: C++](https://img.shields.io/badge/Algorithms-C%2B%2B-blue?logo=cplusplus)](https://isocpp.org/)
-[![Backend: Flask](https://img.shields.io/badge/Backend-Flask-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
-[![Frontend: React](https://img.shields.io/badge/Frontend-React-61DAFB?logo=react)](https://reactjs.org/)
+![CampusRoute Banner](C:\Users\acer\.gemini\antigravity\brain\dddab375-a7ed-413b-93a8-929ab3882a4f\campus_route_banner_1775486670995.png)
 
-**CampusRoute** is a comprehensive campus navigation and infrastructure planning system specifically designed for the **MIT-WPU Pune** campus. Using advanced **Design and Analysis of Algorithms (DAA)** concepts, it solves real-world navigation and cost-optimization problems with a high-performance C++ engine and a sleek React dashboard.
+<div align="center">
 
----
+[![C++](https://img.shields.io/badge/Algorithms-C%2B%2B17-blue?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
+[![Flask](https://img.shields.io/badge/Backend-Flask-lightgrey?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 🚀 Key Modules & Features
+**Optimizing campus traversal and infrastructure planning for MIT-WPU Pune using advanced Design and Analysis of Algorithms.**
 
-### 1. 🚶 Pathfinding (Shortest Path)
-Find the quickest walking route between any two campus locations (e.g., Main Gate to Library).
-- **Algorithm**: Dijkstra's Algorithm (using Min-Heap priority queue).
-- **Complexity**: $O((V + E) \log V)$
+[Report Bug](https://github.com/pushkar156/Campus-Route/issues) · [Request Feature](https://github.com/pushkar156/Campus-Route/issues)
 
-### 2. 🌐 Campus Explorer (Traversal)
-Visualize the logical discovery and connectivity of campus facilities.
-- **Algorithms**: BFS (Breadth-First Search) and DFS (Depth-First Search).
-- **Complexity**: $O(V + E)$
-
-### 3. 🏗️ Infrastructure Planner (MST)
-Optimize the total cost of installing campus-wide cabling or piping across all 16 major nodes.
-- **Algorithms**: Prim's & Kruskal's (Minimum Spanning Tree).
-- **Complexity**: $O(E \log E)$ or $O(E \log V)$
-
-### 4. 🧱 Project Timeline (Topological Sort)
-Generate a dependency-aware construction timeline for campus build projects.
-- **Algorithm**: Kahn’s Algorithm (Topological Sort).
-- **Complexity**: $O(V + E)$
-
-### 5. 📑 Location Directory (Hash Table)
-Instant, O(1) lookup service for campus information and metadata based on location names.
-- **Algorithms**: Hash Table (with djb2 hashing & chaining) and AVL Tree (for sorted listing).
+</div>
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🌟 Overview
 
-- **Core Engine (C++)**: High-performance implementation of all graph algorithms and data structures.
-- **Middleware (Python/Flask)**: Orchestrates the C++ engine via `subprocess` and provides a RESTful API.
-- **Frontend (React/Vite)**: Premium "Quantum Dark" Glassmorphism UI built with **Tailwind CSS**. It features a geographically-mapped, interactive **SVG-based dynamic graph visualization** that accurately models zero-crossing planar node locations.
+**CampusRoute** is more than just a map; it's a high-performance algorithmic suite designed to solve complex spatial and organizational problems within a university ecosystem. Built with a **C++ Core Engine** for heavy computations and a **React-Vite** glassmorphic dashboard for visualization, it provides a premium experience for students and planners alike.
+
+### 🎯 Why CampusRoute?
+- **Speed**: Dijkstra-powered pathfinding for the fastest routes.
+- **Intelligence**: MST-based cost optimization for cabling/piping infrastructure.
+- **Clarity**: BFS/DFS explorations for architectural discovery.
+- **Organization**: Topological Sorting for sequential project management.
 
 ---
 
-## 📁 Project Structure
+## 🛠️ Key Modules & Algorithms
 
-```text
-Campus-Route/
-├── 🧮 cpp/                # Core Algorithm Engine (C++17)
-│   ├── main.cpp            # Entry point & command dispatcher
-│   ├── graph.cpp           # Adjacency list & graph loading
-│   ├── dijkstra.cpp        # Shortest path navigation
-│   ├── bfs_dfs.cpp         # Traversal algorithms
-│   ├── mst.cpp             # Infrastructure planning (Prim/Kruskal)
-│   ├── topo.cpp            # Construction timeline logic
-│   └── hash.cpp / avl.cpp  # Location directory structures
-├── 🐍 backend/            # Python Flask REST API
-│   ├── app.py              # Main API server
-│   └── requirements.txt    # Python dependencies
-├── ⚛️ frontend/           # React + Vite Dashboard
-│   ├── index.html          # Entry-point (Tailwind configuration)
-│   └── src/                # UI components & logic
-│       ├── main.jsx        # Root render script
-│       └── App.jsx         # Main interactive dashboard
-└── 📊 data/               # Graph dataset
-    └── campus_graph.txt    # MIT-WPU node & edge information
+<details open>
+<summary><b>1. 🚀 Pathfinding Engine</b></summary>
+Find the optimal walking route between any two major nodes (e.g., Main Gate → Library).
+<ul>
+  <li><b>Algorithm:</b> Dijkstra's Algorithm (Min-Heap Priority Queue)</li>
+  <li><b>Implementation:</b> O((V + E) log V) complexity for real-time responsiveness.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>2. 🌐 Campus Explorer</b></summary>
+Visualize node connectivity and facility dependencies.
+<ul>
+  <li><b>Algorithms:</b> BFS (Layered discovery) & DFS (Deep exploration).</li>
+</ul>
+</details>
+
+<details>
+<summary><b>3. 🏗️ Infrastructure Planner</b></summary>
+Minimize the total cost of connecting all facilities with cabling or utilities.
+<ul>
+  <li><b>Algorithms:</b> Prim's & Kruskal's (Minimum Spanning Tree).</li>
+  <li><b>Use Case:</b> Strategic planning for campus-wide infrastructure upgrades.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>4. 🧱 Timeline Management</b></summary>
+Generate a dependency-aware construction timeline.
+<ul>
+  <li><b>Algorithm:</b> Kahn’s Algorithm (Topological Sort).</li>
+  <li><b>Logic:</b> Ensures "Wait" conditions are satisfied before starting dependent tasks.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>5. 📑 Smart Directory</b></summary>
+O(1) search for location metadata.
+<ul>
+  <li><b>Data Structures:</b> DJB2 Hashing (Chaining) & AVL Trees for sorted indices.</li>
+</ul>
+</details>
+
+---
+
+## 📐 System Architecture
+
+```mermaid
+graph TD
+    User-->|Interactive Dashboard| React[React Frontend]
+    React-->|RESTful API| Flask[Flask API Wrapper]
+    Flask-->|Subprocess Call| CPP[C++ Core Engine]
+    CPP-->|Loads| Data[campus_graph.txt]
+    CPP-->|Executes| Algos{DAA Algorithms}
+    Algos-->|JSON Output| Flask
+    Flask-->|JSON Response| React
 ```
 
 ---
 
-## 🏁 Get Started Locally
+## 📁 Repository Structure
 
-Follow these steps to set up the project on your machine:
+```bash
+Campus-Route/
+├── 🧮 cpp/           # Algorithm Engine (Dijkstra, BFS, DFS, MST, AVL)
+├── 🐍 backend/       # Python Flask REST API orchestrator
+├── ⚛️ frontend/      # Glassmorphic React + Vite Dashboard
+└── 📊 data/          # Graph datasets & MIT-WPU spatial metadata
+```
 
-### 1. Prerequisite (C++ Compilation)
-Ensure you have `g++` installed. Compile the core engine in the `cpp/` directory:
+---
+
+## 🚦 Getting Started
+
+### 📦 Installation
+
+<details>
+<summary><b>Step 1: Core Engine (C++)</b></summary>
+
 ```bash
 cd cpp
 g++ -std=c++17 main.cpp graph.cpp dijkstra.cpp bfs_dfs.cpp mst.cpp topo.cpp avl.cpp hash.cpp -o campus.exe
-cd ..
 ```
+</details>
 
-### 2. Start the Backend (Flask)
+<details>
+<summary><b>Step 2: API Gateway (Flask)</b></summary>
+
 ```bash
 cd backend
 python -m venv .venv
-.\.venv\Scripts\activate       # On Windows
+source .venv/bin/activate # Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
 python app.py
 ```
+</details>
 
-### 3. Start the Frontend (React)
+<details>
+<summary><b>Step 3: Visual Dashboard (React)</b></summary>
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+</details>
 
 ---
 
-## 🗺️ Campus Graph Model
-The system models 16 nodes (Main Gate, Main Building, Engineering Block, etc.) and 24 bidirectional edges based on the actual physical pathways of the MIT-WPU campus.
+## ✍️ Author and Contributors
+
+This project is developed and maintained by:
+
+| Name | GitHub Profile | Role |
+| :--- | :--- | :--- |
+| **Pushkar** | [![GitHub](https://img.shields.io/badge/GitHub-pushkar156-blue?style=flat&logo=github)](https://github.com/pushkar156) | Developer, Algorithm & Logic Design |
+| **Nupur** | [![GitHub](https://img.shields.io/badge/GitHub-82nupur-pink?style=flat&logo=github)](https://github.com/82nupur) | UI / UX & Documentation |
+| **Parth** | [![GitHub](https://img.shields.io/badge/GitHub-ParthAgrawal2006-green?style=flat&logo=github)](https://github.com/ParthAgrawal2006) | Architect |
 
 ---
 
-## 👨‍💻 Created for:
-**Course**: Design and Analysis of Algorithms (DAA) — PBL Project  
-**Affiliation**: MIT World Peace University (MIT-WPU), Pune
+## ⚖️ License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<div align="center">
+  <sub>Built with ❤️ for the MIT-WPU PBL-2(DAA) Project</sub>
+</div>
