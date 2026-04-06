@@ -1,7 +1,4 @@
 # 📍 CampusRoute — MIT-WPU Smart Navigation System
-
-![CampusRoute Banner](C:\Users\acer\.gemini\antigravity\brain\dddab375-a7ed-413b-93a8-929ab3882a4f\campus_route_banner_1775486670995.png)
-
 <div align="center">
 
 [![C++](https://img.shields.io/badge/Algorithms-C%2B%2B17-blue?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
@@ -10,8 +7,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 **Optimizing campus traversal and infrastructure planning for MIT-WPU Pune using advanced Design and Analysis of Algorithms.**
-
-[Report Bug](https://github.com/pushkar156/Campus-Route/issues) · [Request Feature](https://github.com/pushkar156/Campus-Route/issues)
 
 </div>
 
@@ -95,10 +90,27 @@ graph TD
 
 ```bash
 Campus-Route/
-├── 🧮 cpp/           # Algorithm Engine (Dijkstra, BFS, DFS, MST, AVL)
-├── 🐍 backend/       # Python Flask REST API orchestrator
-├── ⚛️ frontend/      # Glassmorphic React + Vite Dashboard
-└── 📊 data/          # Graph datasets & MIT-WPU spatial metadata
+├── 🧮 cpp/                # Core Algorithm Engine (C++17)
+│   ├── main.cpp            # Input handler & algorithm dispatcher
+│   ├── graph.cpp / .h      # Adjacency list & graph modeling
+│   ├── dijkstra.cpp        # Shortest-path logic (Min-Heap)
+│   ├── bfs_dfs.cpp         # Connection & traversal logic
+│   ├── mst.cpp             # Infrastructure optimization (Prim/Kruskal)
+│   ├── topo.cpp            # Project dependency sorting (Kahn's)
+│   ├── hash.cpp            # O(1) location lookup system
+│   └── avl.cpp             # Balancing tree for sorted indexing
+├── 🐍 backend/            # API Orchestration (Flask)
+│   ├── app.py              # REST API & C++ subprocess runner
+│   └── requirements.txt    # Python dependencies
+├── ⚛️ frontend/           # Visual Interface (React + Vite)
+│   ├── index.html          # HTML entry-point
+│   ├── style.css           # Glassmorphic UI & design system
+│   ├── script.js           # Frontend logic & API calls
+│   └── src/                # React components & icons
+└── 📊 data/               # Spatial Metadata & Datasets
+    ├── campus_graph.txt    # Weighted graph representation
+    ├── campus_locations.json # Geographically-mapped metadata
+    └── campus_edges.json   # Facility connection data
 ```
 
 ---
