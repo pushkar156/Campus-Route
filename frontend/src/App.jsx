@@ -2,34 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE = 'http://127.0.0.1:5000';
 
-const COORDINATES = [
-  { name: "Main Gate", x: 400, y: 550 },             // 0
-  { name: "Back Gate", x: 400, y: 40 },              // 1
-  { name: "Main Building", x: 400, y: 420 },         // 2
-  { name: "Engineering Block", x: 240, y: 350 },     // 3
-  { name: "MBA Block", x: 240, y: 240 },             // 4
-  { name: "Library", x: 400, y: 250 },               // 5
-  { name: "Canteen", x: 550, y: 260 },               // 6
-  { name: "Food Court", x: 670, y: 180 },            // 7
-  { name: "Auditorium", x: 280, y: 460 },            // 8
-  { name: "Sports Complex", x: 580, y: 80 },         // 9
-  { name: "Boys Hostel", x: 280, y: 120 },           // 10
-  { name: "Girls Hostel", x: 460, y: 120 },          // 11
-  { name: "Medical Center", x: 100, y: 200 },        // 12
-  { name: "Admin Block", x: 550, y: 420 },           // 13
-  { name: "Innovation Center", x: 150, y: 480 },     // 14
-  { name: "Parking Area", x: 580, y: 530 },          // 15
-];
-
-const EDGES = [
-  [0, 2], [0, 15], [0, 13], [1, 10], [1, 11], [2, 3], [2, 5], [2, 13], 
-  [3, 4], [3, 14], [4, 5], [5, 6], [5, 8], [6, 7], [7, 9], [8, 13], 
-  [8, 14], [9, 10], [9, 11], [10, 11], [10, 12], [11, 12], [12, 13], [14, 15]
-];
+const COORDINATES_SCALE = { x: 8, y: 12 }; // Scale factor for 0-100 coordinates to SVG units
 
 function App() {
   const [activeView, setActiveView] = useState('navigation');
   const [locations, setLocations] = useState([]);
+  const [mapNodes, setMapNodes] = useState([]);
+  const [mapEdges, setMapEdges] = useState([]);
   const [logs, setLogs] = useState([{ time: '00:00:00', tag: 'INIT', msg: 'System initialized.'}]);
   const consoleEndRef = useRef(null);
 
@@ -48,15 +27,29 @@ function App() {
 
   const [highlightedPath, setHighlightedPath] = useState([]);
 
+  // Load Data
   useEffect(() => {
+    // Fetch locations from Backend (for indexing)
     fetch(`${API_BASE}/locations`)
       .then(res => res.json())
       .then(data => {
          setLocations(data.locations || []);
-         addLog('SYNC', `Live visual network push: ${data.locations?.length || 0} nodes broadcasted.`);
+         addLog('SYNC', `Backend sync: ${data.locations?.length || 0} nodes indexed.`);
       })
-      .catch(err => addLog('ERROR', err.message));
+      .catch(err => addLog('ERROR', `Backend offline, using fallback UI.`));
+
+    // Fetch Spatial Data for Map
+    fetch('/data/campus_locations.json')
+      .then(res => res.json())
+      .then(data => setMapNodes(data.locations))
+      .catch(err => addLog('ERROR', 'Map coordinates missing.'));
+
+    fetch('/data/campus_edges.json')
+      .then(res => res.json())
+      .then(data => setMapEdges(data.edges))
+      .catch(err => addLog('ERROR', 'Map edges missing.'));
   }, []);
+
 
   useEffect(() => {
     consoleEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -241,21 +234,30 @@ function App() {
                   </h3>
                   <div className="space-y-4 relative z-10">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Source Node</label>
-                        <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={src} onChange={e => setSrc(e.target.value)}>
-                          <option value="">Start node</option>
-                          {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Destination</label>
-                        <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={dest} onChange={e => setDest(e.target.value)}>
-                          <option value="">End node</option>
-                          {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
-                        </select>
-                      </div>
+                      {/* Dropdown population from mapNodes fallback */}
+                      {(() => {
+                        const dropdownData = locations.length > 0 ? locations : mapNodes.map(n => ({ index: n.id, name: n.name }));
+                        return (
+                          <>
+                            <div className="space-y-1">
+                              <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Source Node</label>
+                              <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={src} onChange={e => setSrc(e.target.value)}>
+                                <option value="">Start node</option>
+                                {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                              </select>
+                            </div>
+                            <div className="space-y-1">
+                              <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Destination</label>
+                              <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={dest} onChange={e => setDest(e.target.value)}>
+                                <option value="">End node</option>
+                                {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                              </select>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
+
                     <div className="flex items-center justify-between pt-2">
                       <button onClick={runDijkstra} className="px-6 py-2.5 bg-secondary text-on-secondary font-label font-bold text-[10px] tracking-widest uppercase rounded hover:brightness-110 transition-all">
                           Calculate Path
@@ -407,13 +409,14 @@ function App() {
                 <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                   <div className="px-4 py-2 bg-background/60 backdrop-blur-md rounded-lg border border-white/5">
                     <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Network Base</p>
-                    <p className="font-headline font-bold text-primary text-xl">{locations.length || 16} <span className="text-xs text-on-surface-variant font-normal">nodes</span></p>
+                    <p className="font-headline font-bold text-primary text-xl">{mapNodes.length} <span className="text-xs text-on-surface-variant font-normal">nodes</span></p>
                   </div>
                   <div className="px-4 py-2 bg-background/60 backdrop-blur-md rounded-lg border border-white/5">
                     <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Connections</p>
-                    <p className="font-headline font-bold text-secondary text-xl">{EDGES.length} <span className="text-xs text-on-surface-variant font-normal">edges</span></p>
+                    <p className="font-headline font-bold text-secondary text-xl">{mapEdges.length} <span className="text-xs text-on-surface-variant font-normal">edges</span></p>
                   </div>
                 </div>
+
 
                 {/* Legend */}
                 <div className="absolute bottom-6 right-6 z-10 space-y-2 bg-background/60 backdrop-blur-md p-4 rounded-lg border border-white/5">
@@ -432,47 +435,51 @@ function App() {
                 </div>
 
                 {/* SVG Map Visualization */}
-                <div className="w-full h-full flex items-center justify-center p-12 absolute inset-0">
-                  <svg className="w-full h-full opacity-80" viewBox="0 0 800 600">
+                <div className="w-full h-full overflow-y-auto custom-scroll p-8 flex justify-center bg-[#0c0e11]">
+                  <svg className="opacity-90" width="800" height="1300" viewBox="0 0 800 1300">
                     {/* Passive Edges & Active MST Connections */}
-                    {EDGES.map(([u, v], i) => {
+                    {mapEdges.map(([u, v], i) => {
+                      const nodeU = mapNodes.find(n => n.id === u);
+                      const nodeV = mapNodes.find(n => n.id === v);
+                      if (!nodeU || !nodeV) return null;
+
                       let isMst = false;
                       if (activeView === 'infrastructure' && mstResult && mstResult.edges) {
                         isMst = mstResult.edges.some(e => 
-                            (e.from === COORDINATES[u].name && e.to === COORDINATES[v].name) || 
-                            (e.to === COORDINATES[u].name && e.from === COORDINATES[v].name)
+                            (e.from === nodeU.name && e.to === nodeV.name) || 
+                            (e.to === nodeU.name && e.from === nodeV.name)
                         );
                       }
 
                       return (
                         <line
                           key={i}
-                          x1={COORDINATES[u].x} y1={COORDINATES[u].y}
-                          x2={COORDINATES[v].x} y2={COORDINATES[v].y}
+                          x1={nodeU.x * COORDINATES_SCALE.x} y1={nodeU.y * COORDINATES_SCALE.y}
+                          x2={nodeV.x * COORDINATES_SCALE.x} y2={nodeV.y * COORDINATES_SCALE.y}
                           className="transition-all duration-300"
-                          stroke={isMst ? "#6dddff" : "#46484b"}
-                          strokeWidth={isMst ? "3" : "1.5"}
-                          strokeDasharray={isMst ? "0" : "4 4"}
-                          opacity={isMst ? "1" : "0.4"}
-                          style={isMst ? { filter: 'drop-shadow(0 0 4px #6dddff)' } : {}}
+                          stroke={isMst ? "#6dddff" : "#23262a"}
+                          strokeWidth={isMst ? "4" : "1.5"}
+                          strokeDasharray={isMst ? "0" : (nodeU.type === 'junction' && nodeV.type === 'junction' ? "0" : "4 4")}
+                          opacity={isMst ? "1" : "0.6"}
+                          style={isMst ? { filter: 'drop-shadow(0 0 6px #6dddff)' } : {}}
                         />
                       );
                     })}
 
                     {/* Shortest Path Layer SVG */}
                     {activeView === 'navigation' && shortestResult && shortestResult.path && (
-                      <g stroke="#ffd709" strokeLinecap="round" strokeWidth="3" style={{ filter: 'drop-shadow(0 0 8px #ffd709)' }}>
+                      <g stroke="#ffd709" strokeLinecap="round" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 10px #ffd709)' }}>
                         {shortestResult.path.map((nodeName, i) => {
                            if (i === 0) return null;
                            const prevName = shortestResult.path[i-1];
-                           const prevNode = COORDINATES.find(c => c.name === prevName);
-                           const currNode = COORDINATES.find(c => c.name === nodeName);
+                           const prevNode = mapNodes.find(c => c.name === prevName);
+                           const currNode = mapNodes.find(c => c.name === nodeName);
                            if (!prevNode || !currNode) return null;
                            return (
                              <line 
-                               key={`path-${i}`} 
-                               x1={prevNode.x} y1={prevNode.y} 
-                               x2={currNode.x} y2={currNode.y} 
+                                key={`path-${i}`} 
+                                x1={prevNode.x * COORDINATES_SCALE.x} y1={prevNode.y * COORDINATES_SCALE.y} 
+                                x2={currNode.x * COORDINATES_SCALE.x} y2={currNode.y * COORDINATES_SCALE.y} 
                              />
                            );
                         })}
@@ -480,50 +487,56 @@ function App() {
                     )}
 
                     {/* Nodes */}
-                    {COORDINATES.map((node, i) => {
+                    {mapNodes.map((node, i) => {
                       const isActivePath = highlightedPath.includes(node.name);
                       const isEndpoint = (shortestResult?.path && (shortestResult.path[0] === node.name || shortestResult.path[shortestResult.path.length-1] === node.name));
                       
-                      let fillColor = "#171a1d";
-                      let strokeColor = "#46484b";
-                      let radius = "4";
+                      let fillColor = node.type === 'junction' ? "#0c0e11" : "#171a1d";
+                      let strokeColor = node.type === 'junction' ? "#23262a" : "#46484b";
+                      let radius = node.type === 'junction' ? "3" : "6";
 
                       if (isActivePath) {
-                        fillColor = "#171a1d";
+                        fillColor = "#0c0e11";
                         strokeColor = "#6dddff";
-                        radius = "6";
+                        radius = "8";
                       }
                       if (isEndpoint && activeView === 'navigation') {
                          fillColor = "#ffd709";
                          strokeColor = "#ffd709";
-                         radius = "6";
+                         radius = "10";
                       }
 
                       return (
                         <g key={i}>
                           <circle
-                            cx={node.x} cy={node.y}
+                            cx={node.x * COORDINATES_SCALE.x} cy={node.y * COORDINATES_SCALE.y}
                             r={radius}
                             fill={fillColor}
                             stroke={strokeColor}
                             strokeWidth="2"
-                            className="transition-all duration-300"
-                            style={isActivePath ? { filter: 'drop-shadow(0 0 4px #6dddff)' } : {}}
+                            className="transition-all duration-300 cursor-pointer"
+                            onClick={() => {
+                               if (!src) setSrc(node.id);
+                               else if (!dest) setDest(node.id);
+                               else { setSrc(node.id); setDest(''); }
+                            }}
+                            style={isActivePath ? { filter: `drop-shadow(0 0 ${isEndpoint ? '12px' : '6px'} ${isEndpoint ? '#ffd709' : '#6dddff'})` } : {}}
                           />
                           <text 
-                            x={node.x} y={node.y - 15} 
-                            fill="#f9f9fd" 
-                            className="font-label text-[10px]"
+                            x={node.x * COORDINATES_SCALE.x} y={node.y * COORDINATES_SCALE.y - (parseInt(radius) + 8)} 
+                            fill={isActivePath ? "#fff" : "#aaabaf"} 
+                            className={`font-label transition-all duration-300 ${isActivePath ? 'text-[12px] font-bold' : 'text-[9px]'}`}
                             textAnchor="middle"
-                            opacity={isActivePath ? 1 : 0.4}
+                            opacity={isActivePath ? 1 : (node.type === 'junction' ? 0.2 : 0.6)}
                           >
-                            {node.name.replace(' ', '_').toUpperCase()}
+                            {node.name.toUpperCase()}
                           </text>
                         </g>
                       );
                     })}
                   </svg>
                 </div>
+
               </div>
 
             </div>

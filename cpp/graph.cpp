@@ -28,7 +28,7 @@ void Graph::loadFromFile(const string& filename) {
     }
 
     string line;
-    // Skip comment lines
+    // Skip comment lines to find header
     while (getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
         break;
@@ -37,33 +37,58 @@ void Graph::loadFromFile(const string& filename) {
     // First non-comment line: numNodes numEdges
     istringstream header(line);
     int numEdges;
-    header >> numNodes >> numEdges;
+    if (!(header >> numNodes >> numEdges)) {
+        cerr << "Error: Invalid header in " << filename << endl;
+        return;
+    }
 
+    adjList.clear();
     adjList.resize(numNodes);
+    nodeNames.clear();
     nodeNames.resize(numNodes);
+    nameToIndex.clear();
 
-    // Default node names from the campus model
-    string defaultNames[] = {
-        "Main Gate", "Back Gate", "Main Building", "Engineering Block",
-        "MBA Block", "Library", "Canteen", "Food Court",
-        "Auditorium", "Sports Complex", "Boys Hostel", "Girls Hostel",
-        "Medical Center", "Admin Block", "Innovation Center", "Parking Area"
-    };
-
-    for (int i = 0; i < numNodes && i < 16; i++) {
-        addNode(i, defaultNames[i]);
+    // Read node mappings
+    int nodesRead = 0;
+    while (nodesRead < numNodes && getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        
+        istringstream iss(line);
+        int idx;
+        if (iss >> idx) {
+            string name;
+            getline(iss, name);
+            // Extract text between quotes if present
+            size_t first = name.find_first_of("\"");
+            size_t last = name.find_last_of("\"");
+            if (first != string::npos && last != string::npos && last > first) {
+                name = name.substr(first + 1, last - first - 1);
+            } else {
+                // Trim whitespace
+                name.erase(0, name.find_first_not_of(" \t"));
+                name.erase(name.find_last_not_of(" \t") + 1);
+            }
+            addNode(idx, name);
+            nodesRead++;
+        }
     }
 
     // Read edges
-    for (int i = 0; i < numEdges; i++) {
+    int edgesRead = 0;
+    while (edgesRead < numEdges && getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        
+        istringstream iss(line);
         int src, dest, weight;
-        if (file >> src >> dest >> weight) {
+        if (iss >> src >> dest >> weight) {
             addEdge(src, dest, weight);
+            edgesRead++;
         }
     }
 
     file.close();
 }
+
 
 int Graph::getNumNodes() const {
     return numNodes;

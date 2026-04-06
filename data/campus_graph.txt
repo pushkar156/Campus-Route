@@ -1,48 +1,115 @@
-# MIT-WPU Campus Graph Data
-# Format: SOURCE DESTINATION WEIGHT(meters)
-# ==========================================
-# 16 Nodes, 24 Edges (Undirected Weighted Graph)
-#
-# Node Index Mapping:
-# 0  - Main Gate
-# 1  - Back Gate
-# 2  - Main Building
-# 3  - Engineering Block
-# 4  - MBA Block
-# 5  - Library
-# 6  - Canteen
-# 7  - Food Court
-# 8  - Auditorium
-# 9  - Sports Complex
-# 10 - Boys Hostel
-# 11 - Girls Hostel
-# 12 - Medical Center
-# 13 - Admin Block
-# 14 - Innovation Center
-# 15 - Parking Area
+# MIT-WPU Campus Graph Data - Overhaul v2
+# Format: numNodes numEdges
+# Followed by node name list: index "Name"
+# Followed by edge list: srcIndex destIndex weight
+# ------------------------------------------
 
-16 24
-0 2 150
-0 15 80
-0 13 200
-1 10 120
-1 11 140
-2 3 100
-2 5 180
-2 13 90
-3 4 130
-3 14 110
-4 5 70
-5 6 60
-5 8 200
-6 7 40
-7 9 160
-8 13 150
-8 14 120
-9 10 100
-9 11 130
-10 11 80
-10 12 90
-11 12 70
-12 13 170
-14 15 220
+40 52
+
+# Node Mapping
+0 "Main Gate"
+1 "Parking Junction"
+2 "Globe (Circle)"
+3 "WPU Bridge"
+4 "Upper Junction"
+5 "Top Junction"
+6 "Exit Junction"
+7 "Main Exit"
+8 "Saraswati"
+9 "WPU Design"
+10 "Ganga"
+11 "4W Parking"
+12 "2W Parking"
+13 "Agastya (KRC)"
+14 "Shriraj"
+15 "School of Play"
+16 "ATRI Poly"
+17 "Avanti"
+18 "WPU Library"
+19 "Lawn A"
+20 "Jamdagni"
+21 "Vivekananda"
+22 "Viswamitra"
+23 "Vasishtha"
+24 "Bharadwaj"
+25 "Lawn B"
+26 "Mandir"
+27 "Gautam Workshop"
+28 "Kashyap"
+29 "Aarya Bhat"
+30 "Dhruv"
+31 "Gargi"
+32 "Maitri"
+33 "Enclave"
+34 "Chanakya"
+35 "School of Conscious"
+36 "Prayag"
+37 "Tank"
+38 "Basketball Court"
+39 "Back Gate"
+
+# Edges (Spine)
+0 1 100
+1 2 80
+2 3 160
+3 4 200
+4 5 150
+5 6 120
+6 7 50
+
+# Branches (Entrance)
+0 8 20
+8 9 10
+0 10 20
+
+# Branches (Parking)
+1 11 30
+1 12 30
+
+# Branches (Globe)
+2 13 50
+13 14 5
+2 15 50
+15 16 10
+
+# Branches (Bridge/Middle Left)
+3 17 40
+3 19 45
+19 18 10
+3 20 50
+3 21 20
+3 22 60
+
+# Branches (Bridge/Middle Right)
+3 23 10
+3 24 50
+24 25 10
+3 26 30
+3 27 40
+
+# Branches (Upper Left)
+4 28 80
+4 30 80
+5 35 130
+6 36 170
+36 37 10
+6 38 200
+
+# Branches (Upper Right)
+4 29 60
+29 39 40
+4 31 70
+5 32 90
+5 33 100
+33 34 20
+
+# Inter-building connections (estimations)
+13 15 80
+17 19 20
+19 20 15
+21 22 30
+23 24 40
+26 27 20
+28 30 50
+32 33 40
+29 31 60
