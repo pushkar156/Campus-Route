@@ -20,7 +20,6 @@
 - **Speed**: Dijkstra-powered pathfinding for the fastest routes.
 - **Intelligence**: MST-based cost optimization for cabling/piping infrastructure.
 - **Clarity**: BFS/DFS explorations for architectural discovery.
-- **Clarity**: BFS/DFS explorations for architectural discovery.
 
 ---
 
@@ -52,15 +51,6 @@ Minimize the total cost of connecting all facilities with cabling or utilities.
 </ul>
 </details>
 
-
-<details>
-<summary><b>5. 📑 Smart Directory</b></summary>
-O(1) search for location metadata.
-<ul>
-  <li><b>Data Structures:</b> DJB2 Hashing (Chaining) & AVL Trees for sorted indices.</li>
-</ul>
-</details>
-
 ---
 
 ## 📐 System Architecture
@@ -87,9 +77,7 @@ Campus-Route/
 │   ├── graph.cpp / .h      # Adjacency list & graph modeling
 │   ├── dijkstra.cpp        # Shortest-path logic (Min-Heap)
 │   ├── bfs_dfs.cpp         # Connection & traversal logic
-│   ├── mst.cpp             # Infrastructure optimization (Prim/Kruskal)
-│   ├── hash.cpp            # O(1) location lookup system
-│   └── avl.cpp             # Balancing tree for sorted indexing
+│   └── mst.cpp             # Infrastructure optimization (Prim/Kruskal)
 ├── 🐍 backend/            # API Orchestration (Flask)
 │   ├── app.py              # REST API & C++ subprocess runner
 │   └── requirements.txt    # Python dependencies
@@ -115,7 +103,7 @@ Campus-Route/
 
 ```bash
 cd cpp
-g++ -std=c++17 main.cpp graph.cpp dijkstra.cpp bfs_dfs.cpp mst.cpp avl.cpp hash.cpp -o campus.exe
+g++ -std=c++17 main.cpp graph.cpp dijkstra.cpp bfs_dfs.cpp mst.cpp -o campus.exe
 ```
 </details>
 

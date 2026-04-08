@@ -7,9 +7,6 @@
 string dijkstraJSON(const Graph& graph, int source, int dest);
 string bfsDfsJSON(const Graph& graph, int start, const string& type);
 string mstJSON(const Graph& graph, const string& algo);
-string hashSearchJSON(const Graph& graph, const string& query);
-string hashAllJSON(const Graph& graph);
-string avlSortedJSON(const Graph& graph);
 
 // =============================================
 // CampusRoute CLI Driver
@@ -18,8 +15,6 @@ string avlSortedJSON(const Graph& graph);
 //   campus.exe bfs <start_idx>
 //   campus.exe dfs <start_idx>
 //   campus.exe mst <prim|kruskal>
-//   campus.exe search <location_name>
-//   campus.exe sorted
 //   campus.exe locations
 // =============================================
 
@@ -30,8 +25,6 @@ void printUsage() {
          << "\"campus.exe bfs <start>\","
          << "\"campus.exe dfs <start>\","
          << "\"campus.exe mst <prim|kruskal>\","
-         << "\"campus.exe search <location_name>\","
-         << "\"campus.exe sorted\","
          << "\"campus.exe locations\""
          << "]}" << endl;
 }
@@ -76,17 +69,6 @@ int main(int argc, char* argv[]) {
         string algo = argv[2];
         cout << mstJSON(graph, algo) << endl;
 
-
-    } else if (command == "search" && argc >= 3) {
-        // Reconstruct multi-word location name
-        string query = argv[2];
-        for (int i = 3; i < argc; i++) {
-            query += " " + string(argv[i]);
-        }
-        cout << hashSearchJSON(graph, query) << endl;
-
-    } else if (command == "sorted") {
-        cout << avlSortedJSON(graph) << endl;
 
     } else if (command == "locations") {
         cout << locationsJSON(graph) << endl;

@@ -47,7 +47,6 @@ def health_check():
             "shortest-path": "/shortest-path?src=0&dest=5",
             "explore": "/explore?start=0&mode=bfs",
             "mst": "/mst?algo=prim",
-            "search": "/search?query=Library",
             "locations": "/locations"
         }
     })
@@ -69,16 +68,6 @@ def mst():
     algo = request.args.get('algo', 'prim') # 'prim' or 'kruskal'
     return jsonify(run_cpp_command(["mst", algo]))
 
-@app.route('/search', methods=['GET'])
-def search():
-    query = request.args.get('query', '')
-    if not query:
-        return jsonify({"error": "No query provided"})
-    return jsonify(run_cpp_command(["search"] + query.split()))
-
-@app.route('/sorted', methods=['GET'])
-def sorted_list():
-    return jsonify(run_cpp_command(["sorted"]))
 
 @app.route('/locations', methods=['GET'])
 def get_locations():

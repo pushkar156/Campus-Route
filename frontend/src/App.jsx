@@ -21,9 +21,6 @@ function App() {
 
   const [mstResult, setMstResult] = useState(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResult, setSearchResult] = useState(null);
-
   const [highlightedPath, setHighlightedPath] = useState([]);
 
   // Load Data
@@ -75,7 +72,6 @@ function App() {
     setShortestResult(null);
     setExploreResult(null);
     setMstResult(null);
-    setSearchResult(null);
   };
 
   const runDijkstra = async () => {
@@ -116,27 +112,11 @@ function App() {
   };
 
 
-  const runSearch = async () => {
-    addLog('CORE', `Searching database for: ${searchQuery}`);
-    try {
-      const res = await fetch(`${API_BASE}/search?query=${searchQuery}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setSearchResult(data);
-      if (data.found) {
-        addLog('SYNC', `Location verified: ${data.location}`);
-        setHighlightedPath([data.location]);
-      } else {
-        addLog('ERROR', 'Zero matches found in database.');
-      }
-    } catch (err) { addLog('ERROR', err.message); }
-  };
 
   const navItems = [
     { id: 'navigation', label: 'Navigation', icon: 'route' },
     { id: 'explore', label: 'Explore', icon: 'explore' },
     { id: 'infrastructure', label: 'Infrastructure', icon: 'account_tree' },
-    { id: 'directory', label: 'Directory', icon: 'contacts' },
   ];
 
   return (
@@ -326,36 +306,6 @@ function App() {
               )}
 
 
-              {activeView === 'directory' && (
-                <div className="flex flex-col gap-6">
-                  <div className="h-24 glass-module rounded-xl flex items-center px-8 gap-6 z-10 relative">
-                    <div className="flex-1 relative">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                      <input 
-                         className="w-full bg-surface-container-lowest/50 border-none rounded-lg pl-12 py-3 text-sm font-label tracking-widest uppercase focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/40 text-white outline-none" 
-                         placeholder="QUERY DATABASE (HASH)..." 
-                         type="text"
-                         value={searchQuery}
-                         onChange={e => setSearchQuery(e.target.value)}
-                         onKeyDown={e => e.key === 'Enter' && runSearch()}
-                      />
-                    </div>
-                    <button onClick={runSearch} className="flex items-center gap-2 px-4 py-3 hover:bg-primary/20 cursor-pointer rounded bg-surface-container border border-outline-variant/20">
-                      <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest text-primary">Search</span>
-                    </button>
-                  </div>
-                  {searchResult && searchResult.found && (
-                    <div className="glass-module rounded-xl p-6 relative">
-                       <h3 className="text-secondary font-headline text-xl mb-2">{searchResult.location}</h3>
-                       <div className="text-on-surface-variant text-sm mb-4">{searchResult.description}</div>
-                       <div className="flex items-center gap-2 px-4 py-2 rounded bg-surface-container border border-outline-variant/20 inline-flex">
-                          <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Index ID:</span>
-                          <span className="font-headline font-bold text-primary">#{searchResult.index}</span>
-                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
 
             </div>
 
