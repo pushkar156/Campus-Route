@@ -20,7 +20,6 @@ function App() {
   const [exploreResult, setExploreResult] = useState(null);
 
   const [mstResult, setMstResult] = useState(null);
-  const [topoResult, setTopoResult] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResult, setSearchResult] = useState(null);
@@ -77,7 +76,6 @@ function App() {
     setExploreResult(null);
     setMstResult(null);
     setSearchResult(null);
-    setTopoResult(null);
   };
 
   const runDijkstra = async () => {
@@ -117,16 +115,6 @@ function App() {
     } catch (err) { addLog('ERROR', err.message); }
   };
 
-  const runTopo = async () => {
-    addLog('CORE', `Sorting construction dependencies...`);
-    try {
-      const res = await fetch(`${API_BASE}/topo`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setTopoResult(data);
-      addLog('CORE', `Captured ${data.order?.length || 0} dependent tasks.`);
-    } catch (err) { addLog('ERROR', err.message); }
-  };
 
   const runSearch = async () => {
     addLog('CORE', `Searching database for: ${searchQuery}`);
@@ -148,7 +136,6 @@ function App() {
     { id: 'navigation', label: 'Navigation', icon: 'route' },
     { id: 'explore', label: 'Explore', icon: 'explore' },
     { id: 'infrastructure', label: 'Infrastructure', icon: 'account_tree' },
-    { id: 'planning', label: 'Planning', icon: 'event_note' },
     { id: 'directory', label: 'Directory', icon: 'contacts' },
   ];
 
@@ -338,34 +325,6 @@ function App() {
                 </section>
               )}
 
-              {activeView === 'planning' && (
-                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span className="material-symbols-outlined text-6xl">event_note</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-6 relative z-10">
-                    <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase flex items-center gap-2">
-                      <span className="w-1 h-4 bg-primary rounded-full"></span>
-                      Topo Planning
-                    </h3>
-                    <button onClick={runTopo} className="text-[10px] font-label text-secondary uppercase tracking-widest bg-secondary/10 px-3 py-1 rounded hover:bg-secondary/20">Generate Timeline</button>
-                  </div>
-                  {topoResult && topoResult.order && (
-                    <div className="space-y-3 relative z-10">
-                      {topoResult.order.map((task, i) => (
-                        <div key={i} className="flex items-center gap-4">
-                          <span className="w-2 h-2 rounded-full bg-primary"></span>
-                          <div className="flex-1 h-6 bg-surface-container-lowest rounded overflow-hidden flex items-center px-3 relative">
-                             <div className="absolute bg-primary/10 inset-0" style={{width: `${(i+1)*10}%`}}></div>
-                             <span className="text-[11px] text-white z-10">{task.task}</span>
-                          </div>
-                          <span className="font-label text-[9px] text-on-surface-variant w-10">STP {task.step}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              )}
 
               {activeView === 'directory' && (
                 <div className="flex flex-col gap-6">

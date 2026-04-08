@@ -20,7 +20,7 @@
 - **Speed**: Dijkstra-powered pathfinding for the fastest routes.
 - **Intelligence**: MST-based cost optimization for cabling/piping infrastructure.
 - **Clarity**: BFS/DFS explorations for architectural discovery.
-- **Organization**: Topological Sorting for sequential project management.
+- **Clarity**: BFS/DFS explorations for architectural discovery.
 
 ---
 
@@ -52,14 +52,6 @@ Minimize the total cost of connecting all facilities with cabling or utilities.
 </ul>
 </details>
 
-<details>
-<summary><b>4. 🧱 Timeline Management</b></summary>
-Generate a dependency-aware construction timeline.
-<ul>
-  <li><b>Algorithm:</b> Kahn’s Algorithm (Topological Sort).</li>
-  <li><b>Logic:</b> Ensures "Wait" conditions are satisfied before starting dependent tasks.</li>
-</ul>
-</details>
 
 <details>
 <summary><b>5. 📑 Smart Directory</b></summary>
@@ -96,7 +88,6 @@ Campus-Route/
 │   ├── dijkstra.cpp        # Shortest-path logic (Min-Heap)
 │   ├── bfs_dfs.cpp         # Connection & traversal logic
 │   ├── mst.cpp             # Infrastructure optimization (Prim/Kruskal)
-│   ├── topo.cpp            # Project dependency sorting (Kahn's)
 │   ├── hash.cpp            # O(1) location lookup system
 │   └── avl.cpp             # Balancing tree for sorted indexing
 ├── 🐍 backend/            # API Orchestration (Flask)
@@ -124,7 +115,7 @@ Campus-Route/
 
 ```bash
 cd cpp
-g++ -std=c++17 main.cpp graph.cpp dijkstra.cpp bfs_dfs.cpp mst.cpp topo.cpp avl.cpp hash.cpp -o campus.exe
+g++ -std=c++17 main.cpp graph.cpp dijkstra.cpp bfs_dfs.cpp mst.cpp avl.cpp hash.cpp -o campus.exe
 ```
 </details>
 

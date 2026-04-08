@@ -48,9 +48,7 @@ def health_check():
             "explore": "/explore?start=0&mode=bfs",
             "mst": "/mst?algo=prim",
             "search": "/search?query=Library",
-            "sorted": "/sorted",
-            "locations": "/locations",
-            "topo": "/topo"
+            "locations": "/locations"
         }
     })
 
@@ -104,9 +102,6 @@ def get_graph_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-@app.route('/topo', methods=['GET'])
-def topo():
-    return jsonify(run_cpp_command(["topo"]))
 
 if __name__ == '__main__':
     # Running on 5000 is standard for Flask

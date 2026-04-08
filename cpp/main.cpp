@@ -7,7 +7,6 @@
 string dijkstraJSON(const Graph& graph, int source, int dest);
 string bfsDfsJSON(const Graph& graph, int start, const string& type);
 string mstJSON(const Graph& graph, const string& algo);
-string topoJSON();
 string hashSearchJSON(const Graph& graph, const string& query);
 string hashAllJSON(const Graph& graph);
 string avlSortedJSON(const Graph& graph);
@@ -19,7 +18,6 @@ string avlSortedJSON(const Graph& graph);
 //   campus.exe bfs <start_idx>
 //   campus.exe dfs <start_idx>
 //   campus.exe mst <prim|kruskal>
-//   campus.exe topo
 //   campus.exe search <location_name>
 //   campus.exe sorted
 //   campus.exe locations
@@ -32,7 +30,6 @@ void printUsage() {
          << "\"campus.exe bfs <start>\","
          << "\"campus.exe dfs <start>\","
          << "\"campus.exe mst <prim|kruskal>\","
-         << "\"campus.exe topo\","
          << "\"campus.exe search <location_name>\","
          << "\"campus.exe sorted\","
          << "\"campus.exe locations\""
@@ -79,8 +76,6 @@ int main(int argc, char* argv[]) {
         string algo = argv[2];
         cout << mstJSON(graph, algo) << endl;
 
-    } else if (command == "topo") {
-        cout << topoJSON() << endl;
 
     } else if (command == "search" && argc >= 3) {
         // Reconstruct multi-word location name
