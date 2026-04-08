@@ -1,10 +1,10 @@
-# MIT-WPU Campus Graph Data - Image-Accurate Structural Overhaul
+# MIT-WPU Campus Graph Data - Optimized structural layout
 # Format: numNodes numEdges
 # Followed by node name list: index "Name"
 # Followed by edge list: srcIndex destIndex weight
 # ------------------------------------------
 
-41 39
+40 39
 
 # Node Mapping
 0 "Front Gate"
@@ -17,52 +17,51 @@
 7 "Globe (Circle)"
 8 "Avanti"
 9 "Atri"
-10 "Globe Junction (A/A)"
-11 "Agastya"
-12 "Shriraj"
-13 "Academic Junction (D/B)"
-14 "Dnyaeshwar Building"
-15 "Bharadwaj Building"
-16 "Arch Gate"
-17 "Jamdagni"
-18 "Vashistha"
-19 "Temple Junction (V/T)"
-20 "Vivekananda"
-21 "Temple (Mandir)"
-22 "Dronacharya"
-23 "WPU Workshop Junction (V/G)"
-24 "Vishwamitra"
-25 "Gautam Workshop"
-26 "Techno Junction (K/A)"
-27 "Kashyap"
-28 "Aarya Bhat"
-29 "Hostel Junction (D/G)"
-30 "Dhruv"
-31 "Gargi"
-32 "Prayer Junction (P/M)"
-33 "Prayag"
-34 "Maitri"
-35 "Scholars Junction (N/C)"
-36 "Nanak"
-37 "Chanakya"
-38 "Vyas Junction"
-39 "Vyas Building"
-40 "Basketball Court"
+10 "Agastya"
+11 "Shriraj"
+12 "Academic Junction (D/B)"
+13 "Dnyaeshwar Building"
+14 "Bharadwaj Building"
+15 "Arch Gate"
+16 "Jamdagni"
+17 "Vashistha"
+18 "Temple Junction (V/T)"
+19 "Vivekananda"
+20 "Temple (Mandir)"
+21 "Dronacharya"
+22 "WPU Workshop Junction (V/G)"
+23 "Vishwamitra"
+24 "Gautam Workshop"
+25 "Techno Junction (K/A)"
+26 "Kashyap"
+27 "Aarya Bhat"
+28 "Hostel Junction (D/G)"
+29 "Dhruv"
+30 "Gargi"
+31 "Prayer Junction (P/M)"
+32 "Prayag"
+33 "Maitri"
+34 "Scholars Junction (N/C)"
+35 "Nanak"
+36 "Chanakya"
+37 "Vyas Junction"
+38 "Vyas Building"
+39 "Basketball Court"
 
 # Edges (Central Spine)
 0 1 5
 1 4 15
 4 7 120
-7 13 50
-13 16 50
-16 19 5
-19 23 10
-23 26 15
-26 29 10
-29 32 15
-32 35 15
-35 38 15
-38 40 20
+7 12 50
+12 15 50
+15 18 5
+18 22 10
+22 25 15
+25 28 10
+28 31 15
+31 34 15
+34 37 15
+37 39 20
 
 # Branches (Entrance)
 1 2 5
@@ -73,35 +72,35 @@
 # Branches (Globe & Agastya)
 7 8 10
 7 9 10
-7 11 40
-11 12 25
+7 10 40
+10 11 25
 
 # Branches (Lower Academic)
-13 14 40
-13 15 50
-16 17 10
-16 18 10
+12 13 40
+12 14 50
+15 16 10
+15 17 10
 
 # Branches (Temple & Dronacharya)
-19 20 20
-19 21 15
-21 22 55
+18 19 20
+18 20 15
+20 21 55
 
 # Branches (Workshops)
-23 24 10
-23 25 10
+22 23 10
+22 24 10
 
 # Branches (Upper Academic & Techno)
-26 27 15
-26 28 10
-29 30 15
-29 31 5
+25 26 15
+25 27 10
+28 29 15
+28 30 5
 
 # Branches (Hostels & Prayer)
-32 33 10
-32 34 10
+31 32 10
+31 33 10
 
 # Branches (Top Section)
-35 36 20
-35 37 20
-38 39 130
+34 35 20
+34 36 20
+37 38 130
