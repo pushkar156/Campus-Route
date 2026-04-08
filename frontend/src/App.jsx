@@ -38,16 +38,16 @@ function App() {
       })
       .catch(err => addLog('ERROR', `Backend offline, using fallback UI.`));
 
-    // Fetch Spatial Data for Map
-    fetch('/data/campus_locations.json')
+    // Fetch Spatial Data for Map (Nodes and Edges combined)
+    fetch(`${API_BASE}/graph-data`)
       .then(res => res.json())
-      .then(data => setMapNodes(data.locations))
-      .catch(err => addLog('ERROR', 'Map coordinates missing.'));
-
-    fetch('/data/campus_edges.json')
-      .then(res => res.json())
-      .then(data => setMapEdges(data.edges))
-      .catch(err => addLog('ERROR', 'Map edges missing.'));
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        setMapNodes(data.nodes || []);
+        setMapEdges(data.edges || []);
+        addLog('SYNC', 'Visual map data synchronised with backend.');
+      })
+      .catch(err => addLog('ERROR', `Map data missing: ${err.message}`));
   }, []);
 
 
@@ -466,20 +466,26 @@ function App() {
                       );
                     })}
 
-                    {/* Shortest Path Layer SVG */}
+                    {/* Shortest Path Layer SVG (Dijkstra) */}
                     {activeView === 'navigation' && shortestResult && shortestResult.path && (
-                      <g stroke="#ffd709" strokeLinecap="round" strokeWidth="4" style={{ filter: 'drop-shadow(0 0 10px #ffd709)' }}>
+                      <g className="shortest-path-group">
                         {shortestResult.path.map((nodeName, i) => {
                            if (i === 0) return null;
                            const prevName = shortestResult.path[i-1];
-                           const prevNode = mapNodes.find(c => c.name === prevName);
-                           const currNode = mapNodes.find(c => c.name === nodeName);
+                           const prevNode = mapNodes.find(c => c.name.trim().toLowerCase() === prevName.trim().toLowerCase());
+                           const currNode = mapNodes.find(c => c.name.trim().toLowerCase() === nodeName.trim().toLowerCase());
+                           
                            if (!prevNode || !currNode) return null;
+                           
                            return (
                              <line 
-                                key={`path-${i}`} 
+                                key={`path-line-${i}`} 
                                 x1={prevNode.x * COORDINATES_SCALE.x} y1={prevNode.y * COORDINATES_SCALE.y} 
                                 x2={currNode.x * COORDINATES_SCALE.x} y2={currNode.y * COORDINATES_SCALE.y} 
+                                stroke="#ffd709"
+                                strokeWidth="6"
+                                strokeLinecap="round"
+                                style={{ filter: 'drop-shadow(0 0 10px #ffd709)', opacity: 0.9 }}
                              />
                            );
                         })}

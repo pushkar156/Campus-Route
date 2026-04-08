@@ -86,6 +86,24 @@ def sorted_list():
 def get_locations():
     return jsonify(run_cpp_command(["locations"]))
 
+@app.route('/graph-data', methods=['GET'])
+def get_graph_data():
+    try:
+        # Load locations
+        with open(os.path.join(BASE_DIR, "..", "data", "campus_locations.json"), 'r') as f:
+            locations_data = json.load(f)
+        
+        # Load edges
+        with open(os.path.join(BASE_DIR, "..", "data", "campus_edges.json"), 'r') as f:
+            edges_data = json.load(f)
+            
+        return jsonify({
+            "nodes": locations_data["locations"],
+            "edges": edges_data["edges"]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 @app.route('/topo', methods=['GET'])
 def topo():
     return jsonify(run_cpp_command(["topo"]))
