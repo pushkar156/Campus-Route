@@ -137,9 +137,10 @@ This project is developed and maintained by:
 
 | Name | GitHub Profile | Role |
 | :--- | :--- | :--- |
-| **Pushkar** | [![GitHub](https://img.shields.io/badge/GitHub-pushkar156-blue?style=flat&logo=github)](https://github.com/pushkar156) | Developer, Algorithm & Logic Design |
-| **Nupur** | [![GitHub](https://img.shields.io/badge/GitHub-82nupur-pink?style=flat&logo=github)](https://github.com/82nupur) | UI / UX & Documentation |
-| **Parth** | [![GitHub](https://img.shields.io/badge/GitHub-ParthAgrawal2006-green?style=flat&logo=github)](https://github.com/ParthAgrawal2006) | Architect |
+| **Pushkar Gangurde** | [![GitHub](https://img.shields.io/badge/GitHub-pushkar156-blue?style=flat&logo=github)](https://github.com/pushkar156) | Developer, Algorithm & Logic Design |
+| **Nupur Mehta** | [![GitHub](https://img.shields.io/badge/GitHub-82nupur-pink?style=flat&logo=github)](https://github.com/82nupur) | UI / UX & Documentation |
+| **Parth Agrawal** | [![GitHub](https://img.shields.io/badge/GitHub-ParthAgrawal2006-green?style=flat&logo=github)](https://github.com/ParthAgrawal2006) | Architect |
+| **Vedant Patil** | [![GitHub](https://img.shields.io/badge/GitHub-vedant80555-red?style=flat&logo=github)](https://github.com/vedant80555) | Documentation |
 
 ---
 
