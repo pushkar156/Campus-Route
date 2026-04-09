@@ -111,8 +111,6 @@ function App() {
     } catch (err) { addLog('ERROR', err.message); }
   };
 
-
-
   const navItems = [
     { id: 'navigation', label: 'Navigation', icon: 'route' },
     { id: 'explore', label: 'Explore', icon: 'explore' },
@@ -186,127 +184,127 @@ function App() {
 
         {/* Dashboard Grid */}
         <div className="flex-1 overflow-y-auto p-8 custom-scroll relative">
-          <div className="grid grid-cols-12 gap-8 h-full min-h-[600px]">
+          <div className="grid grid-cols-12 gap-8 h-full min-h-[800px]">
             {/* Left Panel (Calculations) */}
-            <div className="col-span-12 xl:col-span-5 space-y-8">
-              
-              {activeView === 'navigation' && (
-                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span className="material-symbols-outlined text-6xl">directions</span>
-                  </div>
-                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-primary rounded-full"></span>
-                    Pathfinding (Dijkstra)
-                  </h3>
-                  <div className="space-y-4 relative z-10">
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Dropdown population from mapNodes fallback */}
-                      {(() => {
-                        const dropdownData = locations.length > 0 ? locations : mapNodes.map(n => ({ index: n.id, name: n.name }));
-                        return (
-                          <>
-                            <div className="space-y-1">
-                              <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Source Node</label>
-                              <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={src} onChange={e => setSrc(e.target.value)}>
-                                <option value="">Start node</option>
-                                {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
-                              </select>
-                            </div>
-                            <div className="space-y-1">
-                              <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Destination</label>
-                              <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={dest} onChange={e => setDest(e.target.value)}>
-                                <option value="">End node</option>
-                                {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
-                              </select>
-                            </div>
-                          </>
-                        );
-                      })()}
+            <div className="col-span-12 xl:col-span-5 z-20">
+              <div className="sticky top-0 space-y-8">
+                
+                {activeView === 'navigation' && (
+                  <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <span className="material-symbols-outlined text-6xl">directions</span>
                     </div>
+                    <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                      <span className="w-1 h-4 bg-primary rounded-full"></span>
+                      Pathfinding (Dijkstra)
+                    </h3>
+                    <div className="space-y-4 relative z-10">
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Dropdown population from mapNodes fallback */}
+                        {(() => {
+                          const dropdownData = locations.length > 0 ? locations : mapNodes.map(n => ({ index: n.id, name: n.name }));
+                          return (
+                            <>
+                              <div className="space-y-1">
+                                <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Source Node</label>
+                                <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={src} onChange={e => setSrc(e.target.value)}>
+                                  <option value="">Start node</option>
+                                  {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                                </select>
+                              </div>
+                              <div className="space-y-1">
+                                <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Destination</label>
+                                <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={dest} onChange={e => setDest(e.target.value)}>
+                                  <option value="">End node</option>
+                                  {dropdownData.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                                </select>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <button onClick={runDijkstra} className="px-6 py-2.5 bg-secondary text-on-secondary font-label font-bold text-[10px] tracking-widest uppercase rounded hover:brightness-110 transition-all">
-                          Calculate Path
-                      </button>
-                      {shortestResult && shortestResult.path && (
-                        <div className="px-3 py-1.5 bg-surface-container-highest rounded border border-outline-variant/20 flex items-center gap-3">
-                          <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Est. Distance</span>
-                          <span className="font-headline font-bold text-secondary">{shortestResult.distance}m</span>
+                      <div className="flex items-center justify-between pt-2">
+                        <button onClick={runDijkstra} className="px-6 py-2.5 bg-secondary text-on-secondary font-label font-bold text-[10px] tracking-widest uppercase rounded hover:brightness-110 transition-all">
+                            Calculate Path
+                        </button>
+                        {shortestResult && shortestResult.path && (
+                          <div className="px-3 py-1.5 bg-surface-container-highest rounded border border-outline-variant/20 flex items-center gap-3">
+                            <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Est. Distance</span>
+                            <span className="font-headline font-bold text-secondary">{shortestResult.distance}m</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {activeView === 'explore' && (
+                  <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <span className="material-symbols-outlined text-6xl">explore</span>
+                    </div>
+                    <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                      <span className="w-1 h-4 bg-primary rounded-full"></span>
+                      Traversal Logic
+                    </h3>
+                    <div className="space-y-4 relative z-10">
+                      <div className="space-y-1">
+                        <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Starting Node</label>
+                        <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={exploreStart} onChange={e => setExploreStart(e.target.value)}>
+                          <option value="">Select node</option>
+                          {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <button onClick={() => runExplore('bfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
+                            Breadth First (BFS)
+                        </button>
+                        <button onClick={() => runExplore('dfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
+                            Depth First (DFS)
+                        </button>
+                      </div>
+                      {exploreResult && exploreResult.traversal && (
+                        <div className="mt-4 p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+                          <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Traversal Order ({exploreResult.algorithm})</p>
+                          <div className="flex gap-2 flex-wrap">
+                            {exploreResult.traversal.map((n, i) => (
+                              <span key={i} className="px-3 py-1 flex items-center justify-center bg-surface-container rounded-full text-[10px] border border-outline-variant/20 text-white truncate max-w-[100px]" title={n}>{n}</span>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                </section>
-              )}
+                  </section>
+                )}
 
-              {activeView === 'explore' && (
-                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span className="material-symbols-outlined text-6xl">explore</span>
-                  </div>
-                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-primary rounded-full"></span>
-                    Traversal Logic
-                  </h3>
-                  <div className="space-y-4 relative z-10">
-                    <div className="space-y-1">
-                      <label className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Starting Node</label>
-                      <select className="w-full bg-surface-container-lowest border-none rounded-lg text-sm font-body px-3 py-2 text-white focus:ring-1 focus:ring-primary outline-none" value={exploreStart} onChange={e => setExploreStart(e.target.value)}>
-                        <option value="">Select node</option>
-                        {locations.map(l => <option key={l.index} value={l.index}>{l.name}</option>)}
-                      </select>
+                {activeView === 'infrastructure' && (
+                  <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <span className="material-symbols-outlined text-6xl">account_tree</span>
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                      <button onClick={() => runExplore('bfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
-                          Breadth First (BFS)
-                      </button>
-                      <button onClick={() => runExplore('dfs')} className="flex-1 py-3 border border-outline-variant/20 rounded-lg font-label text-[10px] tracking-widest uppercase text-tertiary hover:bg-tertiary/10 transition-colors">
-                          Depth First (DFS)
-                      </button>
-                    </div>
-                    {exploreResult && exploreResult.traversal && (
-                      <div className="mt-4 p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
-                        <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Traversal Order ({exploreResult.algorithm})</p>
-                        <div className="flex gap-2 flex-wrap">
-                          {exploreResult.traversal.map((n, i) => (
-                            <span key={i} className="px-3 py-1 flex items-center justify-center bg-surface-container rounded-full text-[10px] border border-outline-variant/20 text-white truncate max-w-[100px]" title={n}>{n}</span>
-                          ))}
+                    <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
+                      <span className="w-1 h-4 bg-primary rounded-full"></span>
+                      Structural MST
+                    </h3>
+                    <div className="space-y-4 relative z-10">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="flex-1">
+                          <div className="flex bg-surface-container-lowest p-1 rounded-lg">
+                            <button onClick={() => runMST('prim')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Prim's</button>
+                            <button onClick={() => runMST('kruskal')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Kruskal's</button>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Project Cost</p>
+                          <p className="font-headline font-bold text-2xl text-secondary">{mstResult ? mstResult.totalCost : '0'}m</p>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </section>
-              )}
-
-              {activeView === 'infrastructure' && (
-                <section className="glass-module rounded-xl p-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <span className="material-symbols-outlined text-6xl">account_tree</span>
-                  </div>
-                  <h3 className="font-label text-xs font-bold text-primary tracking-widest uppercase mb-6 flex items-center gap-2">
-                    <span className="w-1 h-4 bg-primary rounded-full"></span>
-                    Structural MST
-                  </h3>
-                  <div className="space-y-4 relative z-10">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="flex-1">
-                        <div className="flex bg-surface-container-lowest p-1 rounded-lg">
-                          <button onClick={() => runMST('prim')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Prim's</button>
-                          <button onClick={() => runMST('kruskal')} className="flex-1 py-1.5 focus:bg-surface-container-highest focus:text-primary text-on-surface-variant text-white font-label text-[10px] tracking-widest uppercase rounded">Kruskal's</button>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Project Cost</p>
-                        <p className="font-headline font-bold text-2xl text-secondary">{mstResult ? mstResult.totalCost : '0'}m</p>
-                      </div>
                     </div>
-                  </div>
-                </section>
-              )}
+                  </section>
+                )}
 
-
-
+              </div>
             </div>
 
             {/* Right Panel (Visualization) */}
